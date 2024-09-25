@@ -1,7 +1,21 @@
 <x-master-layout>
     <div class="w-full">
         <div class="flex justify-between mt-7 w-full">
-            <h1 class="text-3xl font-bold">Riwayat Transaksi</h1>
+            <h1 class="text-3xl font-bold">Riwayat Transaksi</h1> 
+        </div>
+        <div class="flex justify-between mt-2 gap-2">
+            <form method="GET" action="{{ route('master.transaksi.index') }}" class="flex items-center">
+                <label for="per_page" class="mr-2 text-gray-700">Items/page:</label>
+                <select name="per_page" 
+                        class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 shadow-sm transition duration-150 ease-in-out" 
+                        id="per_page" 
+                        onchange="this.form.submit()">
+                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                    <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                </select>
+            </form>
             <div class="md:w-72">
                 <div class="flex items-center max-w-sm mx-auto">
                     <label for="simple-search" class="sr-only">Search</label>
@@ -12,7 +26,7 @@
             </div>
         </div>
 
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-7">
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-1">
             <table id="transaksi-table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400" style="background: gray">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-700"> 
                     <tr>
@@ -80,7 +94,7 @@
                                             <form id="delete-form-{{ $transaksi->id }}" action="{{ route('transaksi.destroy', $transaksi->id) }}" method="POST" class="block">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="delete-button block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left" data-transaksi-id="{{ $transaksi->id }}">
+                                                <button type="button" class="delete-button block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left" data-transaksi-id="{{ $transaksi->id }}">
                                                     Hapus
                                                 </button>
                                             </form>
@@ -96,9 +110,20 @@
         </div>
     </div>
 
+    <!-- Pagination Links -->
+    <div class="flex items-center justify-between mt-4 px-4">
+        <div class="text-gray-700">
+            Showing <span class="font-semibold">{{ $Transaksi->firstItem() }}</span> to <span class="font-semibold">{{ $Transaksi->lastItem() }}</span> of <span class="font-semibold">{{ $Transaksi->total() }}</span> results
+        </div>
+        <div>
+            {{ $Transaksi->links('vendor.pagination.tailwind') }}
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const deleteButtons = document.querySelectorAll('.delete-button');
+
             // Handle dropdown toggle
             document.querySelectorAll('.dropdown-toggle-button').forEach(button => {
                 button.addEventListener('click', function(event) {
@@ -121,7 +146,7 @@
 
             deleteButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    const userId = this.getAttribute('data-transaksi-id');
+                    const transaksiId = this.getAttribute('data-transaksi-id');
 
                     // Show SweetAlert confirmation
                     Swal.fire({
@@ -136,12 +161,13 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             // If confirmed, submit the form
-                            document.getElementById('delete-form-' + produkId).submit();
+                            document.getElementById('delete-form-' + transaksiId).submit();
                         }
                     });
                 });
             });
         });
+
 
         function searchTable() {
             // Get the search input value

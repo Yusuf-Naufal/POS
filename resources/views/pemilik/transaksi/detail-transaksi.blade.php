@@ -1,16 +1,16 @@
 <x-master-layout>
     <div class="w-full p-6">
         <!-- Header Section -->
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold">Resi: {{ $transaksi->resi }}</h1>
-            <div class="flex gap-2">
-                <button type="button" class="text-purple-700 hover:text-white border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900">
+        <div class="flex flex-col lg:flex-row justify-between items-center mb-6 p-4 bg-white shadow rounded-lg">
+            <h1 class="text-2xl font-bold text-gray-800">Resi: {{ $transaksi->resi }}</h1>
+            <div class="flex flex-wrap gap-2 mt-4 lg:mt-0">
+                <button type="button" class="text-purple-700 border border-purple-700 hover:bg-purple-800 hover:text-white focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 transition duration-200 ease-in-out">
                     Print
                 </button>
-                <a href="{{ route('transaksi.edit', $transaksi->resi) }}" type="button" class="bg-purple-700 text-white hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
+                <a href="{{ route('transaksi.edit', $transaksi->resi) }}" class="bg-purple-700 text-white hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 transition duration-200 ease-in-out">
                     Ubah
                 </a>
-                <button id="dropdownMenuIconButton" data-dropdown-toggle="dropdownDots" class="bg-white text-gray-900 hover:bg-gray-100 focus:ring-4 focus:ring-gray-50 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-600 rounded-lg p-2 text-sm">
+                <button id="dropdownMenuIconButton" data-dropdown-toggle="dropdownDots" class="bg-white text-gray-900 hover:bg-gray-100 focus:ring-4 focus:ring-gray-50 rounded-lg p-2 text-sm transition duration-200 ease-in-out">
                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 4 15">
                         <path d="M3.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6.041a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 5.959a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/>
                     </svg>
@@ -22,10 +22,14 @@
                         <li>
                             <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Batalkan</a>
                         </li>
+                        <li>
+                            <a href="{{ route('master.transaksi.index') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Kembali</a>
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
+
 
         <!-- Transaction Details Section -->
         <div class="bg-gray-100 p-6 rounded-lg shadow-md mb-6">
@@ -105,42 +109,43 @@
         </div>
 
         <!-- Additional Information -->
-        <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+        <div class="bg-white p-6 rounded-lg shadow-md">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label for="Catatan" class="font-semibold mb-2 block">Catatan:</label>
-                    <textarea id="Catatan" rows="10" class="w-full p-3 border rounded-lg"></textarea>
+                    <label for="Catatan" class="font-semibold mb-2 block text-gray-700">Catatan:</label>
+                    <textarea id="Catatan" rows="10" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200">{{ $transaksi->catatan }}</textarea>
                 </div>
-                <div>
-                    <div class="flex justify-between mb-2">
-                        <h2 class="font-semibold">Subtotal:</h2>
-                        <p>{{ $transaksi->total_belanja }}</p>
+
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center pb-2">
+                        <h2 class="text-lg font-semibold text-gray-700">Subtotal:</h2>
+                        <p id="subtotal" class="text-lg font-medium text-gray-900">{{ number_format($transaksi->total_belanja, 2) }}</p>
                     </div>
-                    <div class="flex justify-between mb-2">
-                        <h2 class="font-semibold">Diskon:</h2>
-                        <p>-</p> <!-- Placeholder for discount if needed -->
+                    <div class="flex justify-between items-center pb-2">
+                        <h2 class="text-lg font-semibold text-gray-700">Diskon:</h2>
+                        <p class="text-lg font-medium text-gray-900">-</p>
                     </div>
-                    <div class="flex justify-between mb-2">
-                        <h2 class="font-semibold">Penyesuaian:</h2>
-                        <p>-</p> <!-- Placeholder for adjustment if needed -->
+                    <div class="flex justify-between items-center border-b border-gray-300 pb-2">
+                        <h2 class="text-lg font-semibold text-gray-700">Penyesuaian:</h2>
+                        <p class="text-lg font-medium text-gray-900">-</p>
                     </div>
-                    <hr class="h-px my-3 bg-gray-200 border-0 dark:bg-gray-700">
-                    <div class="flex justify-between mb-2">
-                        <h2 class="font-semibold">Total:</h2>
-                        <p>{{ $transaksi->total_belanja }}</p>
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-semibold text-gray-700">Total:</h2>
+                        <p id="total" class="text-lg font-bold text-purple-700">{{ number_format($transaksi->total_belanja, 2) }}</p>
                     </div>
-                    <div class="flex justify-between">
-                        <h2 class="font-semibold">Sisa Tagihan:</h2>
-                        <p>
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-semibold text-gray-700">Sisa Tagihan:</h2>
+                        <span>
                             @if($transaksi->status == 'Selesai')
-                                Lunas
+                                <span class="text-green-500">Lunas</span>
                             @else
-                                Belum Lunas
+                                <span class="text-red-500">Belum Lunas</span>
                             @endif
-                        </p>
+                        </span>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 </x-master-layout>

@@ -1,12 +1,20 @@
 <x-admin-layout>
     <div class="w-full p-6">
-        <h1 class="text-2xl font-bold mb-4">Edit Outlet</h1>
+        <form id="outlet-form" action="{{ route('outlets.update', $outlet->id) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+            <div class="flex justify-between">
+                <h1 class="text-2xl font-bold mb-4">Edit Outlet</h1>
+                <label class="flex items-center me-5 cursor-pointer my-4">
+                    <input type="hidden" id="status" name="status" value="Nonaktif">
+                    <input type="checkbox" id="pos-toggle" class="sr-only peer" name="status-checkbox" {{ $outlet->status == 'Aktif' ? 'checked' : '' }}/>
+                    <div class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+                    <label for="pos-toggle" class="ms-2 text-xl font-semibold text-gray-900 dark:text-gray-300">Tutup / Aktif</label>
+                </label>
+            </div>
 
-        <!-- Card Container -->
-        <div class="bg-white h-auto w-full shadow-md rounded-lg p-6">
-            <form id="outlet-form" action="{{ route('outlets.update', $outlet->id) }}" method="POST" enctype="multipart/form-data">
-                @csrf
-                @method('PUT')
+            <!-- Card Container -->
+            <div class="bg-white h-auto w-full shadow-md rounded-lg p-6">
                 <div class="flex flex-wrap gap-4">
                     <div class="flex w-full gap-4">
                         <div>
@@ -53,19 +61,9 @@
                                 </div>
                                 <div class="relative w-full md:w-1/3 mb-4">
                                     <label for="pemilik" class="block text-sm font-medium text-gray-700">Pemilik</label>
-                                    <select name="pemilik" id="" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                        <option value="" selected disabled>Pilih Pemilik</option>
-                                        @foreach ($user as $user)
-                                            <option value="{{ $user->nama }}" {{ $user->nama === $user->nama ? 'selected' : '' }}>
-                                                {{ $user->nama }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                    <input type="text" value="{{ $outlet->pemilik }}" id="pemilik" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="pemilik">
+                                    
                                 </div>
-
-
-
-
                             </div>
 
                             <div class="flex gap-4">
@@ -97,7 +95,7 @@
                     <!-- Button Container -->
                     <div class="w-full flex justify-end">
                         <div>
-                            <a href="{{ route('outlets.index') }}" class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">
+                            <a href="{{ route('master.dashboard') }}" class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">
                                 Batal
                             </a>
                             <button type="submit" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
@@ -106,8 +104,8 @@
                         </div>
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
 
         <!-- Main modal -->
         <div id="default-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center flex items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
@@ -216,8 +214,21 @@
             return new File([u8arr], filename, { type: mime });
         }
 
+        document.addEventListener('DOMContentLoaded', function() {
+            const posToggle = document.getElementById('pos-toggle');
+            const statusInput = document.getElementById('status');
+
+            // Update the hidden status input based on the checkbox
+            posToggle.addEventListener('change', function() {
+                statusInput.value = this.checked ? 'Aktif' : 'Nonaktif';
+            });
+
+            // Check status before form submission
+            const form = document.getElementById('outlet-form');
+            form.addEventListener('submit', function() {
+                // Ensure status is updated
+                statusInput.value = posToggle.checked ? 'Aktif' : 'Nonaktif';
+            });
+        });
     </script>
-    
-
-
 </x-admin-layout>

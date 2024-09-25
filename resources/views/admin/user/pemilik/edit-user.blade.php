@@ -1,6 +1,6 @@
 <x-admin-layout>
     <div class="w-full p-6">
-        <h1 class="text-2xl font-bold mb-4">Pemilik : Edit</h1>
+        <h1 class="text-2xl font-bold mb-4">Users : Edit</h1>
 
         <!-- Card Container -->
         <div class="bg-white h-auto w-full shadow-md rounded-lg p-6">
@@ -12,6 +12,8 @@
                 <input type="hidden" id="status" name="status" value="{{ $user->status }}" />
                 <!-- Input hidden untuk id_outlet -->
                 <input type="hidden" id="id_outlet" name="id_outlet" value="{{ $user->id_outlet }}" />
+
+                <input type="hidden" id="role" name="role" value="{{ $user->role }}" />
 
                 <!-- Data Pribadi Section -->
                 <div class="border-b border-gray-300 py-4">

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('total_belanja', 15, 2); 
             $table->unsignedBigInteger('id_outlet');
             $table->string('status')->default('Pending'); 
+            $table->string('catatan')->nullable($value = true) ;
 
             $table->timestamps();
 

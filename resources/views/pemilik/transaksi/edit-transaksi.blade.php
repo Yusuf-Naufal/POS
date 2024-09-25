@@ -27,9 +27,16 @@
                             <h2 class="font-semibold">Tanggal / Waktu:</h2>
                             <p>{{ $transaksi->created_at }}</p>
                         </div>
-                        <div class="flex justify-between mb-2">
+                        <div class="flex justify-between mb-2 items-center">
                             <h2 class="font-semibold">Tanggal:</h2>
-                            <p>{{ $transaksi->tanggal_transaksi }}</p>
+                            <input
+                                value="{{ old('tanggal_transaksi', $transaksi->tanggal_transaksi) }}"
+                                type="date"
+                                name="tanggal_transaksi"
+                                id="tanggal_transaksi"
+                                class="block border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                required
+                            >
                         </div>
                         <div class="flex justify-between">
                             <h2 class="font-semibold">Status:</h2>
@@ -171,9 +178,11 @@
                                 @endif
                             </p>
                         </div>
-                        <button id="submit-button" type="button" class="bg-purple-600 text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium rounded-lg text-sm px-5 py-2.5 transition duration-150 ease-in-out">
-                            Simpan
-                        </button>
+                        <div class="flex justify-end">
+                            <button id="submit-button" type="button" class="bg-purple-600 text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium rounded-lg text-sm px-5 py-2.5 transition duration-150 ease-in-out">
+                                Simpan
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -310,6 +319,8 @@
             document.getElementById('submit-button').addEventListener('click', function() {
                 const formData = new FormData(document.getElementById('editForm'));
 
+                const tanggalTransaksi = document.getElementById('tanggal_transaksi').value;
+
                 // Convert FormData to a structured object
                 const produk = Array.from(formData.entries()).reduce((acc, [key, value]) => {
                     const match = key.match(/^produk\[(\d+)\]\[(\w+)\]$/);
@@ -328,13 +339,28 @@
                 // Debug: Check the produk data before sending
                 console.log('Produk Data:', filteredProduk);
 
+                Swal.fire({
+                    title: 'Memproses transaksi...',
+                    text: 'Mohon tunggu, update sedang diproses.',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading(); // Display loading spinner
+                    }
+                });
+
                 fetch(`/transaksi/${document.getElementById('transaction-id').value}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
-                    body: JSON.stringify({ produk: filteredProduk })
+                    body: JSON.stringify({ 
+                        produk: filteredProduk,
+                        tanggal_transaksi: tanggalTransaksi
+                     })
                 })
                 .then(response => response.json())
                 .then(data => {

@@ -32,7 +32,7 @@ class Outlet extends Model
 
     public function produks()
     {
-        return $this->hasMany(Produk::class,  'id_produk');
+        return $this->hasMany(Produk::class, 'id_outlet');
     }
 
     

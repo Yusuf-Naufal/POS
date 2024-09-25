@@ -307,14 +307,14 @@
                     
                     // Show SweetAlert confirmation
                     Swal.fire({
-                        title: 'Apakah Anda yakin?',
-                        text: "Anda tidak bisa mengembalikan produk yang dihapus!",
+                        title: 'Apakah stok habis?',
+                        text: "Anda akan mengubah status stok menjadi habis!",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: 'Ya, Hapus!',
-                        cancelButtonText: 'Batal'
+                        cancelButtonText: 'Batal',
+                        confirmButtonText: 'Ya, habis!'
                     }).then((result) => {
                         if (result.isConfirmed) {
                             // If confirmed, make an AJAX request to update the product status

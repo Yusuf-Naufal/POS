@@ -1,4 +1,4 @@
-<x-admin-layout>
+<x-master-layout>
     <div class="w-full p-6">
         <h1 class="text-2xl font-bold mb-4">Karyawan : Create</h1>
 
@@ -17,76 +17,79 @@
                     
                     <div id="data-pribadi" class="hidden mt-4">
                         <!-- Form Fields -->
-                        <div class="flex justify-center gap-4">
-                            <div>
-                                <!-- Upload Image Section -->
-                                <div class="flex items-center justify-center w-64 h-64">
-                                    <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                                        <div id="image-preview" class="flex items-center justify-center w-full h-full hidden">
-                                            <!-- Default SVG Icon -->
+                        <div class="flex flex-col lg:flex-row gap-8">
+                            <!-- Upload Image Section -->
+                            <div class="flex flex-col items-center justify-center lg:w-1/3 space-y-5">
+                                <div class="flex items-center justify-center w-64 h-64 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer">
+                                    <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-full">
+                                        <div id="image-preview" class="hidden">
                                             <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                                             </svg>
-                                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span></p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span></p>
                                         </div>
-                                        <input id="dropzone-file" type="file" class="hidden" accept="image/*"  name="foto" onchange="previewImage(event)" />
-                                        <img class="w-full h-full rounded-md" id="image-update" src="" alt="">
+                                        <input id="dropzone-file" type="file" class="hidden" accept="image/*" name="foto" onchange="previewImage(event)" />
+                                        <img id="image-update" class="w-full h-full rounded-md" src="" alt="">
                                     </label>
                                 </div>
-    
-                                <div class="flex justify-center mt-5">
-                                    <button type="button" onclick="startCamera()" class="flex items-center justify-center p-3 bg-blue-500 text-white rounded-full hover:bg-blue-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-camera" viewBox="0 0 16 16">
-                                            <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4z"/>
-                                            <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5m0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
-                                        </svg>
-                                    </button>
+                                <button type="button" onclick="startCamera()" class="flex items-center justify-center p-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:ring-2 focus:ring-blue-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-camera" viewBox="0 0 16 16">
+                                        <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4z"/>
+                                        <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5m0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0"/>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Form Input Section -->
+                            <div class="lg:w-2/3">
+                                <div class="space-y-4">
+                                    <!-- Name Field -->
+                                    <div>
+                                        <label for="nama" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                                        <input type="text" id="nama" name="nama" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    </div>
+
+                                    <!-- Telephone and Username -->
+                                    <div class="flex flex-col lg:flex-row gap-4">
+                                        <div class="w-full">
+                                            <label for="no_telp" class="block text-sm font-medium text-gray-700">Telepon</label>
+                                            <input type="text" id="no_telp" name="no_telp" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                        </div>
+                                        <div class="w-full">
+                                            <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                                            <input type="text" id="username" name="username" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <!-- Email and Password -->
+                                    <div class="flex flex-col lg:flex-row gap-4">
+                                        <div class="w-full">
+                                            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                                            <input type="text" id="email" name="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                        </div>
+                                        <div class="w-full">
+                                            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                                            <input type="password" id="password" name="password" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                        </div>
+                                    </div>
+
+                                    <!-- Gender and Date of Birth -->
+                                    <div class="flex flex-col lg:flex-row gap-4">
+                                        <div class="w-full">
+                                            <label for="jenis_kelamin" class="block text-sm font-medium text-gray-700">Jenis Kelamin</label>
+                                            <select id="jenis_kelamin" name="jenis_kelamin" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                                <option value="" disabled selected>Pilih Jenis Kelamin</option>
+                                                <option value="Laki-laki">Laki-laki</option>
+                                                <option value="Perempuan">Perempuan</option>
+                                            </select>
+                                        </div>
+                                        <div class="w-full">
+                                            <label for="tanggal_lahir" class="block text-sm font-medium text-gray-700">Tanggal Lahir</label>
+                                            <input type="date" id="tanggal_lahir" name="tanggal_lahir" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="w-full">
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium text-gray-700" for="nama">Nama Lengkap</label>
-                                    <input type="text" id="nama" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="nama">
-                                </div>
-        
-                                <div class="flex gap-4">
-                                    <div class="w-full mb-4">
-                                        <label class="block text-sm font-medium text-gray-700" for="no_telp">Telepon</label>
-                                        <input type="text" id="no_telp" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="no_telp">
-                                    </div>
-                                    <div class="w-full mb-4">
-                                        <label class="block text-sm font-medium text-gray-700" for="username">Username</label>
-                                        <input type="text"  id="username" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="username">
-                                    </div>
-                                </div>
-
-                                <div class="flex gap-4">
-                                    <div class="w-full mb-4">
-                                        <label class="block text-sm font-medium text-gray-700" for="email">Email</label>
-                                        <input type="text" id="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="email">
-                                    </div>
-                                    <div class="w-full mb-4">
-                                        <label class="block text-sm font-medium text-gray-700" for="password">Password</label>
-                                        <input type="text"  id="password" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="password">
-                                    </div>
-                                </div>
-        
-                                <div class="flex gap-4">
-                                    <div class="w-full mb-4">
-                                        <label for="jenis_kelamin" class="block text-sm font-medium text-gray-700">Jenis Kelamin</label>
-                                        <select name="jenis_kelamin" id="jenis_kelamin" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                                            <option value="" disabled selected>Pilih Jenis Kelamin</option>
-                                            <option value="Laki-laki">Laki-laki</option>
-                                            <option value="Perempuan">Perempuan</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="w-full mb-4">
-                                        <label class="block text-sm font-medium text-gray-700" for="tanggal_lahir">Tanggal Lahir</label>
-                                        <input value="" type="date" id="tanggal_lahir" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="tanggal_lahir">
-                                    </div>
-                                </div>
-                            </div>     
                         </div>
                     </div>
                 </div>
@@ -265,4 +268,4 @@
         }
 
     </script>
-</x-admin-layout>
+</x-master-layout>

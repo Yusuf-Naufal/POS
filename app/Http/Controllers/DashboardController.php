@@ -21,7 +21,7 @@ class DashboardController extends Controller
 
         // Ambil produk yang terkait dengan outlet
         $produks = Produk::where('id_outlet', $outlets->id)
-                ->orderBy('nama_produk', 'asc') // Order by the product name in ascending order
+                ->orderBy('nama_produk', 'desc') // Order by the product name in ascending order
                 ->get();
 
         return view('user.dashboard', [
@@ -114,21 +114,39 @@ class DashboardController extends Controller
 
         // Generate date range
         $dateRange = [];
-        $date = $startDate->copy();
-        while ($date->lte($endDate)) {
-            $dateRange[] = $date->format('Y-m-d');
-            $date->addDay();
-        }
+        
+        if ($periode === 'tahun') {
+            // For 'tahun', generate month labels (e.g., January, February)
+            $date = $startDate->copy();
+            while ($date->lte($endDate)) {
+                $dateRange[] = $date->format('F'); // Format month as full name
+                $date->addMonth();
+            }
 
-        $query = DB::table('transaksi')
-            ->select(DB::raw('DATE(tanggal_transaksi) as label, SUM(total_belanja) as total_penghasilan, COUNT(id) as total_transaksi'))
-            ->groupBy('label')
-            ->whereBetween('tanggal_transaksi', [$startDate, $endDate])
-            ->where('id_outlet', auth()->user()->id_outlet);
+            // Adjust the query for grouping by month
+            $query = DB::table('transaksi')
+                ->select(DB::raw('DATE_FORMAT(tanggal_transaksi, "%M") as label, SUM(total_belanja) as total_penghasilan, COUNT(id) as total_transaksi'))
+                ->groupBy('label')
+                ->whereBetween('tanggal_transaksi', [$startDate, $endDate])
+                ->where('id_outlet', auth()->user()->id_outlet);
+        } else {
+            // For other periods (hari, minggu, bulan), use daily labels
+            $date = $startDate->copy();
+            while ($date->lte($endDate)) {
+                $dateRange[] = $date->format('Y-m-d');
+                $date->addDay();
+            }
+
+            $query = DB::table('transaksi')
+                ->select(DB::raw('DATE(tanggal_transaksi) as label, SUM(total_belanja) as total_penghasilan, COUNT(id) as total_transaksi'))
+                ->groupBy('label')
+                ->whereBetween('tanggal_transaksi', [$startDate, $endDate])
+                ->where('id_outlet', auth()->user()->id_outlet);
+        }
 
         $data = $query->get()->keyBy('label');
 
-        // Fill missing dates with zero values
+        // Fill missing dates or months with zero values
         $result = array_map(function ($date) use ($data) {
             return $data->get($date, (object) [
                 'label' => $date,
@@ -139,6 +157,7 @@ class DashboardController extends Controller
 
         return response()->json($result);
     }
+
 
 
     

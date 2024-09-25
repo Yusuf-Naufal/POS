@@ -32,11 +32,17 @@ class User extends Authenticatable
         'status',
         'catatan',
         'foto',
+        'id_outlet'
     ];
 
     public function outlet()
     {
         return $this->belongsTo(Outlet::class, 'id_outlet');
+    }
+
+    public function pengajuanOutlets()
+    {
+        return $this->hasMany(Pengajuan_Outlet::class, 'id_pemilik');
     }
 
 

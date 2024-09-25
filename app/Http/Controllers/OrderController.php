@@ -261,12 +261,14 @@ class OrderController extends Controller
         // Dapatkan outlets yang terkait dengan pengguna ini
         $outlets = $user->outlet;
 
+        $perPage = request()->get('per_page', 10);
+
         // Ambil semua pesanan dari outlet yang terkait dengan status "Denied" atau "Success", dan hanya untuk hari ini
         $allOrders = Order::where('id_outlet', $outlets->id)
             ->whereIn('status', ['Denied', 'Success'])
             ->whereDate('created_at', now()->toDateString()) // Filter order hanya untuk hari ini
             ->with(['detailOrders.produk'])
-            ->get();
+            ->paginate($perPage);
 
         return view('user.riwayat-order', [
             'Outlet' => $outlets,
@@ -367,6 +369,34 @@ class OrderController extends Controller
             return response()->json(['success' => false, 'message' => 'Gagal membatalkan order']);
         }
     }
+
+    public function destroyOldDeniedOrders()
+    {
+        try {
+            DB::beginTransaction();
+
+            // Find orders with status 'Denied' that are older than 3 days
+            $orders = Order::with('detailOrders')
+                ->where('status', 'Denied')
+                ->where('created_at', '<', now()->subDays(3))
+                ->get();
+
+            foreach ($orders as $order) {
+                // Delete associated detail orders
+                $order->detailOrders()->delete();
+
+                // Delete the order itself
+                $order->delete();
+            }
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Old denied orders successfully deleted']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['success' => false, 'message' => 'Failed to delete old denied orders']);
+        }
+    }
+
 
 
 

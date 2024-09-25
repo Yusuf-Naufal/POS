@@ -10,7 +10,7 @@ class UnitController extends Controller
     public function index()
     {
         $unit = Unit::all();
-        return view('admin.unit.unit', [
+        return view('unit', [
             'Unit' => $unit,
         ]);
     }

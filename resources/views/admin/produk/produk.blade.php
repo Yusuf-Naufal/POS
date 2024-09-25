@@ -1,11 +1,29 @@
 <x-admin-layout>
     <div class="w-full">
-        <div class="flex justify-between mt-7">
+        <div class="flex justify-between flex-col md:flex-row items-center">
             <h1 class="text-3xl font-bold">Daftar Produk</h1>
+            <div class="flex items-center gap-4">
+                <form method="GET" action="{{ route('produks.index') }}" class="flex items-center mt-4">
+                    <label for="per_page" class="mr-2 text-gray-700">Items/page:</label>
+                    <select name="per_page" 
+                            class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 shadow-sm transition duration-150 ease-in-out" 
+                            id="per_page" 
+                            onchange="this.form.submit()">
+                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                    </select>
+                </form>
+                <div class="relative w-auto">
+                    <label for="simple-search" class="sr-only">Search</label>
+                    <input type="text" id="simple-search" onkeyup="searchTable()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 transition duration-150 ease-in-out" placeholder="Search Produk..." required />
+                </div>
+            </div>
         </div>
 
-        <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-7">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400" style="background: gray">
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg mt-2">
+            <table id="produk-table" class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400" style="background: gray">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-700"> 
                     <tr>
                         <th scope="col" class="px-6 py-3">
@@ -134,6 +152,15 @@
         </div>
     </div>
 
+    <div class="flex items-center justify-between mt-4 px-4">
+        <div class="text-gray-700">
+            Showing <span class="font-semibold">{{ $Produk->firstItem() }}</span> to <span class="font-semibold">{{ $Produk->lastItem() }}</span> of <span class="font-semibold">{{ $Produk->total() }}</span> results
+        </div>
+        <div>
+            {{ $Produk->links('vendor.pagination.tailwind') }}
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const deleteButtons = document.querySelectorAll('.delete-button');
@@ -180,5 +207,35 @@
                 });
             });
         });
+
+        function searchTable() {
+            // Get the search input value
+            const input = document.getElementById('simple-search');
+            const filter = input.value.toLowerCase();
+
+            // Get the table and tbody elements
+            const table = document.getElementById('produk-table');
+            const tbody = table.getElementsByTagName('tbody')[0];
+            const rows = tbody.getElementsByTagName('tr');
+
+            // Loop through all table rows and hide those that don't match the search input
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let matched = false;
+
+                // Loop through all cells in the current row
+                for (let j = 0; j < cells.length; j++) {
+                    const cell = cells[j];
+                    if (cell.textContent.toLowerCase().includes(filter)) {
+                        matched = true;
+                        break;
+                    }
+                }
+
+                // Show or hide the row based on whether it matched
+                rows[i].style.display = matched ? '' : 'none';
+            }
+        }
+
     </script>
 </x-admin-layout>

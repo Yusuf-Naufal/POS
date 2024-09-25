@@ -6,7 +6,7 @@
 
         <div class="flex justify-between items-center">
             <h1 class="text-3xl font-bold my-4 ml-3">Order : "Process"</h1>
-            <div class="max-w-96 min-w-80">
+            <div class="md:min-w-80">
                 <div class="flex items-center max-w-sm mx-auto">
                     <label for="simple-search" class="sr-only">Search</label>
                     <div class="relative w-full">

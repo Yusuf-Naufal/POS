@@ -3,17 +3,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Register</title>
+    <title>Register Pemilik</title>
     @vite('resources/css/app.css')
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet" />
 </head>
 <body class="min-h-screen flex items-center justify-center bg-gray-100">
-    <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data" class="w-full max-w-xl lg:min-w-fit mx-auto h-auto p-6 md:p-8">
         @csrf
-        <div class="w-fit max-w-4xl lg:min-w-fit mx-auto h-auto bg-white rounded-lg shadow-lg p-6 md:p-8">
+        <div class="w-full max-w-5xl lg:min-w-fit mx-auto h-auto bg-white rounded-lg shadow-lg p-6 md:p-8">
             <!-- Registration Form -->
             <div id="registrationForm" class="space-y-6 lg:min-w-[400px]">
-                <h2 class="text-2xl font-bold text-center text-gray-900">Register</h2>
+                <h2 class="text-2xl font-bold text-center text-gray-900">Register Pemilik</h2>
                 <div class="mb-4">
                     <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                     <input type="email" id="email" name="email" required

@@ -17,7 +17,10 @@ class TransaksiController extends Controller
     // =============================== ADMIN =================================== //
     public function index()
     {
-        $transaksi = Transaksi::all();
+
+        $perPage = request()->get('per_page', 10);
+
+        $transaksi = Transaksi::paginate($perPage);
         $outlet = Outlet::all();
         return view('admin.transaksi.transaksi', [
              'Transaksi' => $transaksi,
@@ -88,6 +91,7 @@ class TransaksiController extends Controller
                 'produk' => 'required|array',
                 'produk.*.id' => 'required|exists:produks,id',
                 'produk.*.qty' => 'required|integer|min:1',
+                'tanggal_transaksi' => 'required|date',
             ]);
 
             DB::transaction(function () use ($validatedData, $id) {
@@ -116,6 +120,8 @@ class TransaksiController extends Controller
                     ->sum(DB::raw('qty * harga_jual'));
 
                 $transaksi = Transaksi::findOrFail($id);
+                $transaksi->catatan;
+                $transaksi->tanggal_transaksi = $validatedData['tanggal_transaksi'];
                 $transaksi->total_qty = $totalQty;
                 $transaksi->total_belanja = $totalBelanja;
                 $transaksi->save();
@@ -127,17 +133,6 @@ class TransaksiController extends Controller
             return response()->json(['message' => 'Error updating transaksi'], 500);
         }
     }
-
-
-
-
-
-
-
-
-
-    
-
     
     // ================================= KASIR ================================== //
     public function store(Request $request)
@@ -250,13 +245,23 @@ class TransaksiController extends Controller
 
         // Verifikasi PIN
         if ($outlet->pin === $pin) {
-            // PIN benar, arahkan ke halaman berikutnya
-            return redirect()->route('users.dashboard');
+            // Ambil pengguna yang terautentikasi
+            $user = auth()->user();
+
+            // Cek status user
+            if ($user->status === 'Bekerja') {
+                // Jika status user "Bekerja", arahkan ke halaman dashboard
+                return redirect()->route('users.dashboard');
+            } else {
+                // Jika status bukan "Bekerja", tampilkan pesan kesalahan
+                return back()->withErrors(['status' => 'Anda tidak sedang dalam status bekerja.'])->withInput();
+            }
         } else {
             // PIN salah, kembalikan ke form dengan pesan error
             return back()->withErrors(['pin' => 'PIN yang Anda masukkan salah.'])->withInput();
         }
     }
+
 
     // TRANSAKSI DARI ORDER
     public function updateTransaction(Request $request)
@@ -316,9 +321,11 @@ class TransaksiController extends Controller
     {
         $OutletId = auth()->user()->id_outlet;
 
+        $perPage = request()->get('per_page', 10);
+
         $transaksi = Transaksi::where('id_outlet', $OutletId)
         ->orderBy('created_at', 'desc')
-        ->get();
+        ->paginate($perPage);
         
         return view('pemilik.transaksi.transaksi', [
              'Transaksi' => $transaksi,

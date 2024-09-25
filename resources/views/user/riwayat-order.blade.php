@@ -6,23 +6,40 @@
 
         <div class="flex justify-between items-center">
             <h1 class="text-3xl font-bold my-4 ml-3">Riwayat Order</h1>
-            <div class="max-w-96 min-w-80">
-                <div class="flex items-center max-w-sm mx-auto">
+        </div>
+
+        <div class="flex justify-between flex-col lg:flex-row mb-4">
+            <div class="flex items-center">
+                <label for="filter" class="mr-2 text-gray-700">Filter:</label>
+                <select name="filter" id="filter" onchange="filterData()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-fit p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option value="today">Hari ini</option>
+                    <option value="week">Minggu ini</option>
+                    <option value="month">Bulan ini</option>
+                </select>
+            </div>
+            
+            <div class="flex gap-4 items-center mt-4 lg:mt-0">
+                <form method="GET" action="{{ route('riwayat-order.index') }}" class="flex items-center">
+                    <label for="per_page" class="mr-2 text-gray-700">Items/page:</label>
+                    <select name="per_page" 
+                            class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2 shadow-sm transition duration-150 ease-in-out" 
+                            id="per_page" 
+                            onchange="this.form.submit()">
+                        <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                    </select>
+                </form>
+
+                
+                <div class="relative">
                     <label for="simple-search" class="sr-only">Search</label>
-                    <div class="relative w-full">
-                        <input type="text" id="simple-search" onkeyup="searchTable()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Orderan..." required />
-                    </div>
+                    <input type="text" id="simple-search" onkeyup="searchTable()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Orderan..." required />
                 </div>
             </div>
         </div>
 
-        <div>
-            <select name="filter" id="filter" onchange="filterData()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-fit p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                <option value="today">Hari ini</option>
-                <option value="week">Minggu ini</option>
-                <option value="month">Bulan ini</option>
-            </select>
-        </div>
 
         <div class="bg-white shadow-lg rounded-lg overflow-hidden mt-2">
             <div class="overflow-x-auto">
@@ -162,6 +179,29 @@
         </div>
     </div>
 
+    <!-- Pagination Links -->
+    <div id="pagination-container" class="flex items-center justify-between mt-4 px-4">
+        <div class="text-gray-700">
+            Showing 
+            <span class="font-semibold">{{ $AllOrders->firstItem() }}</span> 
+            to 
+            <span class="font-semibold">{{ min($AllOrders->lastItem(), $AllOrders->total()) }}</span> 
+            of 
+            <span class="font-semibold">{{ $AllOrders->total() }}</span> results
+        </div>
+        
+        <div class="flex items-center">
+            <nav>
+                {{ $AllOrders->links('vendor.pagination.tailwind', [
+                    'pageName' => 'page',
+                    'queryString' => ['filter' => request('filter'), 'per_page' => request('per_page')],
+                ]) }}
+            </nav>
+        </div>
+    </div>
+
+
+
     <script>
         function openModal(id, outletName, outletAddress, outletPhone, date, resi, customerName, pickupTime, customerTelp, totalQty, subtotal, total, status, notes, orderItems) {
             // Set modal content
@@ -241,25 +281,33 @@
         // Function to handle filter changes
         function filterData() {
             const filterValue = document.getElementById('filter').value;
-            fetchFilteredData(filterValue);
+            const page = 1; // Reset to the first page when filtering
+            fetchFilteredData(filterValue, page);
         }
 
-        function fetchFilteredData(filterValue) {
+        function fetchFilteredData(filterValue, page) {
             const url = `/api/data`;
-
-            const params = {
-                filter: filterValue
-            };
-
+            const params = { filter: filterValue, page: page, per_page: document.getElementById('per_page').value };
             const queryString = new URLSearchParams(params);
 
             fetch(`${url}?${queryString}`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    populateTable(data);
+                    if (data && data.data) {
+                        populateTable(data.data);
+                        updatePagination(data.total, data.current_page, data.last_page, document.getElementById('per_page').value);
+                    } else {
+                        console.error('Data is undefined or not in expected format:', data);
+                    }
                 })
                 .catch(error => console.error('Error fetching data:', error));
         }
+
 
         // Function to populate the table with data
         function populateTable(data) {
@@ -301,6 +349,54 @@
                 tbody.appendChild(row);
             });
         }
+
+        function updatePagination(total, currentPage, lastPage, perPage) {
+            const paginationContainer = document.getElementById('pagination-container');
+            paginationContainer.innerHTML = '';
+
+            // Ensure perPage is a number
+            perPage = parseInt(perPage, 10) || 10; // Default to 10 if NaN
+
+            // Calculate the range of items being displayed
+            const startItem = (currentPage - 1) * perPage + 1;
+            const endItem = Math.min(currentPage * perPage, total);
+            
+            // Handle edge case where total is 0
+            if (total === 0) {
+                const showingText = `Showing 0 to 0 of 0 results`;
+                const showingElement = document.createElement('div');
+                showingElement.className = 'text-gray-700';
+                showingElement.innerText = showingText;
+                paginationContainer.appendChild(showingElement);
+                return; // No need to create pagination links if total is 0
+            }
+
+            const showingText = `Showing ${startItem} to ${endItem} of ${total} results`;
+            const showingElement = document.createElement('div');
+            showingElement.className = 'text-gray-700';
+            showingElement.innerText = showingText;
+            paginationContainer.appendChild(showingElement);
+            
+            // Create pagination links
+            for (let i = 1; i <= lastPage; i++) {
+                const pageLink = document.createElement('button');
+                
+                // Use Tailwind classes for styling
+                pageLink.innerText = i;
+                pageLink.className = `mx-1 px-3 py-1 text-sm font-semibold border rounded-lg 
+                    ${i === currentPage ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-200 hover:text-gray-800'}`;
+                
+                pageLink.onclick = () => {
+                    fetchFilteredData(document.getElementById('filter').value, i);
+                };
+                
+                paginationContainer.appendChild(pageLink);
+            }
+
+        }
+
+
+
 
         // Fetch and display data for the default filter on page load
         window.onload = function() {

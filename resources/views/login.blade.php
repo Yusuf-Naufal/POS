@@ -41,10 +41,9 @@
                 </button>
             </div>
         </form>
-
-        {{-- <div class="mt-6 text-center">
+        <div class="mt-6 text-center">
             <a href="{{ route('registerForm') }}" class="text-sm text-indigo-600 hover:text-indigo-500">Belum punya akun?</a>
-        </div> --}}
+        </div>
     </div>
 
     {{-- SCRIPT --}}

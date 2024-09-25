@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         
         $middleware->alias([
             'time.access' => \App\Http\Middleware\TimeAccessMiddleware::class,
+            'role' => \App\Http\Middleware\RolePermission::class,
         ]);
 
     })

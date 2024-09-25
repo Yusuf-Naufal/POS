@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Order;
 use App\Models\Outlet;
 use App\Models\Produk;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -39,7 +39,13 @@ class AuthController extends Controller
             // Arahkan pengguna berdasarkan role mereka
             switch ($user->role) {
                 case 'Master':
-                    return redirect()->route('master.dashboard')->withCookie(cookie()->forever('everLogin', true));
+                    if (auth()->user()->id_outlet) {
+                        // Jika id_outlet ada, arahkan ke dashboard
+                        return redirect()->route('master.dashboard')->withCookie(cookie()->forever('everLogin', true));
+                    } else {
+                        // Jika id_outlet null, arahkan ke halaman registrasi outlet
+                        return redirect()->route('master.outlet.register')->withCookie(cookie()->forever('everLogin', true));
+                    }
                 case 'Admin':
                     return redirect()->route('dashboard.admin')->withCookie(cookie()->forever('everLogin', true));
                 default:
@@ -85,7 +91,8 @@ class AuthController extends Controller
         $user->tanggal_lahir = $request->tanggal_lahir;
         $user->jenis_kelamin = $request->jenis_kelamin;
         $user->password = Hash::make($request->password); // Hash the password
-        // $user->password = $request->password;
+        $user->role = 'Master';
+        $user->status = 'Pending';
         $user->alamat = $request->alamat;
         $user->foto = 'profile/' . $foto;
         
@@ -102,15 +109,36 @@ class AuthController extends Controller
         return redirect()->route('loginForm');
     }
 
-    public function indexAdmin()
+    // =================================================== ADMIN ================================================== //
+
+    public function indexAdminPemilik()
     {
-        $user = User::where('role', 'Master')->get();
-        return view('admin.user.user', [
+        $perPage = request()->get('per_page', 10);
+        
+        $user = User::where('role', 'Master')
+        // ->whereIn('status', ['Bekerja','Berhenti'])
+        ->paginate($perPage);
+
+        return view('admin.user.pemilik.user', [
             'User' => $user,
         ]);
     }
 
-    public function deactivatePemilik($id)
+    public function indexAdminKaryawan()
+    {
+        $perPage = request()->get('per_page', 10);
+        
+        $users = User::where('role', 'User')
+            ->whereIn('status', ['Bekerja', 'Berhenti'])
+            ->paginate($perPage);
+
+
+        return view('admin.user.karyawan.user', [
+            'User' => $users,
+        ]);
+    }
+
+    public function deactivateUser($id)
     {
         $user = User::find($id);
 
@@ -118,13 +146,22 @@ class AuthController extends Controller
             $user->status = 'Berhenti';
             $user->id_outlet = NULL;
             $user->save();
-            return redirect()->route('admin.users.index')->with('success', 'User status updated to Berhenti.');
+
+            if($user->role === 'Master'){
+                return redirect()->route('admin.users.index')->with('success', 'User status updated to Berhenti.');
+            }else{
+                return redirect()->route('admin.karyawan.index')->with('success', 'User status updated to Berhenti.');
+            }
         }
 
-        return redirect()->route('admin.users.index')->with('error', 'User tidak ada.');
+        if($user->role === 'Master'){
+            return redirect()->route('admin.users.index')->with('success', 'User status updated to Berhenti.');
+        }else{
+            return redirect()->route('admin.karyawan.index')->with('success', 'User status updated to Berhenti.');
+        }
     }
 
-    public function activatePemilik($id)
+    public function activateUser($id)
     {
         $user = User::find($id);
 
@@ -132,20 +169,28 @@ class AuthController extends Controller
             $user->status = 'Bekerja';
             $user->id_outlet = NULL;
             $user->save();
-            return redirect()->route('admin.users.index')->with('success', 'User status updated to Bekerja.');
+            if($user->role === 'Master'){
+                return redirect()->route('admin.users.index')->with('success', 'User status updated to Berhenti.');
+            }else{
+                return redirect()->route('admin.karyawan.index')->with('success', 'User status updated to Berhenti.');
+            }
         }
 
-        return redirect()->route('admin.users.index')->with('error', 'User tidak ada.');
+        if($user->role === 'Master'){
+            return redirect()->route('admin.users.index')->with('success', 'User status updated to Berhenti.');
+        }else{
+            return redirect()->route('admin.karyawan.index')->with('success', 'User status updated to Berhenti.');
+        }
     }
 
-    public function editPemilik($id)
+    public function edit($id)
     {
         // Temukan user berdasarkan id
         $user = User::findOrFail($id);
         $outlets = Outlet::all();
 
         // Tampilkan view edit dengan data user
-        return view('admin.user.edit-user', compact('user', 'outlets'));
+        return view('admin.user.pemilik.edit-user', compact('user', 'outlets'));
     }
 
     public function createPemilik()
@@ -154,7 +199,16 @@ class AuthController extends Controller
         $outlets = Outlet::all();
 
         // Tampilkan view edit dengan data user
-        return view('admin.user.add-user', compact( 'outlets'));
+        return view('admin.user.pemilik.add-user', compact( 'outlets'));
+    }
+
+    public function createKaryawanAdmin()
+    {
+        // Temukan user berdasarkan id
+        $outlets = Outlet::all();
+
+        // Tampilkan view edit dengan data user
+        return view('admin.user.karyawan.add-user', compact( 'outlets'));
     }
 
     public function storePemilik(Request $request)
@@ -204,7 +258,7 @@ class AuthController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
     }
 
-    public function updatePemilik(Request $request, $id)
+    public function update(Request $request, $id)
     {
         // Validasi permintaan
         $validation = Validator::make($request->all(), [
@@ -251,10 +305,16 @@ class AuthController extends Controller
         $user->id_outlet = $request->id_outlet;
         $user->save();
 
-        return redirect()->route('admin.users.index')->with('success', 'User updated successfully!');
+        if($request->role === 'Master'){
+            return redirect()->route('admin.users.index')->with('success', 'User updated successfully!');
+        }else{
+            return redirect()->route('admin.karyawan.index')->with('success', 'User updated successfully!');
+        }
 
         // return $request;
     }
+
+    // ====================================== MASTER ============================================== //
 
     public function indexMaster()
     {
@@ -263,10 +323,12 @@ class AuthController extends Controller
         // Dapatkan ID outlet dari pengguna yang sedang login
         $userOutletId = $user->id_outlet;
 
+        $perPage = request()->get('per_page', 10);
+
         // Ambil pengguna dengan role 'User' dan id_outlet sesuai dengan ID outlet login
         $users = User::where('role', 'User')
                     ->where('id_outlet', $userOutletId)
-                    ->get();
+                    ->paginate($perPage);
 
         // Jika perlu, dapatkan outlet yang terkait dengan pengguna ini
         $outlets = $user->outlet;
@@ -281,9 +343,12 @@ class AuthController extends Controller
     {
         return view('pemilik.user.add-user');
     }
+    
 
     public function storeKaryawan(Request $request)
     {
+        $login = auth()->user()->role;
+
         // Validate the input
         $validation = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
@@ -333,7 +398,11 @@ class AuthController extends Controller
         $user->save();
 
         // Redirect back with a success message
-        return redirect()->route('master.users.index')->with('success', 'User created successfully.');
+        if($login === 'Master'){
+            return redirect()->route('master.users.index')->with('success', 'User created successfully.');
+        }else{
+            return redirect()->route('admin.karyawan.index')->with('success', 'User created successfully.');
+        }
     }
 
     public function editKaryawan($id)
@@ -444,7 +513,11 @@ class AuthController extends Controller
 
         // Determine where to redirect based on a condition (e.g., role or some other criteria)
         if (auth()->user()->role === 'Admin') {
-            return redirect()->route('admin.users.index')->with('success', 'User deleted successfully!');
+            if($user->role == 'Master'){
+                return redirect()->route('admin.users.index')->with('success', 'User deleted successfully!');
+            }else{
+                return redirect()->route('admin.karyawan.index')->with('success', 'User deleted successfully!');
+            }
         } else {
             return redirect()->route('master.users.index')->with('success', 'User deleted successfully!');
         }

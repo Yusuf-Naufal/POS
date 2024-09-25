@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Outlet;
+use App\Models\Pengajuan_Outlet;
 use App\Models\User;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
@@ -14,7 +15,9 @@ class OutletController extends Controller
 {
     public function index()
     {
-        $outlet = Outlet::all();
+        $perPage = request()->get('per_page', 10);
+
+        $outlet = Outlet::paginate($perPage);
         return view('admin.outlet.outlet', [
             'Outlet' => $outlet,
         ]);
@@ -126,33 +129,52 @@ class OutletController extends Controller
         $outlet->instagram = $request->instagram;
         $outlet->facebook = $request->facebook;
         $outlet->tiktok = $request->tiktok;
+        $outlet->status = $request->status;
         $outlet->save();
 
-        return redirect()->route('outlets.index')->with('success', 'Outlet updated successfully!');
+        if (auth()->user()->role === 'Admin') {
+            return redirect()->route('outlets.index')->with('success', 'Outlet updated successfully!');
+        }else{
+            return redirect()->route('master.dashboard')->with('success', 'Outlet updated successfully!');
+        }
     }
 
     public function destroy($id)
     {
         $outlet = Outlet::find($id);
-        
+
         if ($outlet) {
-            // Delete the photo file if it exists
+            // Delete the outlet's photo if it exists
             if ($outlet->foto) {
-                // Assuming the photos are stored in the 'storage/assets' directory
                 $photoPath = public_path('storage/assets/' . $outlet->foto);
                 if (file_exists($photoPath)) {
-                    unlink($photoPath); // Delete the file
+                    unlink($photoPath); // Delete the outlet's photo file
                 }
             }
 
-            // Delete the outlet record
+            // Loop through the products to delete their photos
+            foreach ($outlet->produks as $produk) {
+                if ($produk->foto) {
+                    // Assuming the product photos are stored in 'storage/assets/products'
+                    $productPhotoPath = public_path('storage/assets/' . $produk->foto);
+                    if (file_exists($productPhotoPath)) {
+                        unlink($productPhotoPath); // Delete the product's photo file
+                    }
+                }
+            }
+
+            // Delete all products associated with this outlet
+            $outlet->produks()->delete(); // This deletes all related products
+
+            // Finally, delete the outlet record
             $outlet->delete();
-            
-            return redirect()->route('outlets.index')->with('success', 'Outlet deleted successfully.');
+
+            return redirect()->route('outlets.index')->with('success', 'Outlet and its products (including photos) deleted successfully.');
         }
 
         return redirect()->route('outlets.index')->with('error', 'Outlet not found.');
     }
+
 
     public function deactivate($id)
     {
@@ -178,6 +200,51 @@ class OutletController extends Controller
         }
 
         return redirect()->route('outlets.index')->with('error', 'Outlet not found.');
+    }
+
+    public function editOutlet($id)
+    {
+        // Temukan outlet berdasarkan id
+        $outlet = Outlet::findOrFail($id);
+
+        // Tampilkan view edit dengan data outlet
+        return view('pemilik.edit-outlet', compact('outlet'));
+    }
+
+    public function Register()
+    {
+        // Mendapatkan ID pengguna yang sedang login
+        $userId = auth()->user()->id;
+
+        // Mencari pengajuan berdasarkan id_pemilik yang sedang login
+        $pengajuan = Pengajuan_Outlet::where('id_pemilik', $userId)->first();
+
+        // Cek apakah pengajuan ada dan statusnya 'Pending'
+        if ($pengajuan) {
+            if ($pengajuan->status === 'Pending') {
+                // Menampilkan status pending
+                return view('pemilik.register-outlet', [
+                    'status' => 'pending',
+                    'pengajuan' => $pengajuan
+                ]);
+            } elseif ($pengajuan->status === 'Rejected') {
+                // Menampilkan status ditolak
+                return view('pemilik.register-outlet', [
+                    'status' => 'ditolak',
+                    'pengajuan' => $pengajuan
+                ]);
+            } else {
+                // Menampilkan status belum ada (untuk status lain)
+                return view('pemilik.register-outlet', [
+                    'status' => 'belum ada',
+                    'pengajuan' => $pengajuan
+                ]);
+            }
+        }
+
+
+        // Menampilkan form pendaftaran outlet
+        return view('pemilik.register-outlet', ['status' => 'register']);
     }
 
 

@@ -2,20 +2,36 @@
     <div class="w-full justify-start">
         <div class="flex justify-between mt-7 w-full">
             <h1 class="text-3xl font-bold">Daftar Karyawan</h1>
-            <div class="md:w-72">
-                <div class="flex items-center max-w-sm mx-auto">
-                    <label for="simple-search" class="sr-only">Search</label>
-                    <div class="relative w-full">
-                        <input type="text" id="simple-search" onkeyup="searchTable()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Karyawan..." required />
+        </div>
+
+        <div class="mt-4 mb-4 flex flex-col md:flex-row md:justify-between items-start md:items-center gap-4">
+            <a href="{{ route('master.users.create') }}" class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800 transition duration-150 ease-in-out">
+                Tambah Karyawan
+            </a>
+            <div class="flex gap-2">
+                <div>
+                    <form method="GET" action="{{ route('master.users.index') }}" class="flex items-center">
+                        <label for="per_page" class="mr-2 text-gray-700">Users/page:</label>
+                        <select name="per_page" 
+                                class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 shadow-sm transition duration-150 ease-in-out" 
+                                id="per_page" 
+                                onchange="this.form.submit()">
+                            <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
+                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                        </select>
+                    </form>
+                </div>
+                <div class="md:w-72">
+                    <div class="flex items-center max-w-sm mx-auto">
+                        <label for="simple-search" class="sr-only">Search</label>
+                        <div class="relative w-full">
+                            <input type="text" id="simple-search" onkeyup="searchTable()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Karyawan..." required />
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="mt-4 mb-7">
-            <a href="{{ route('master.users.create') }}" type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                Tambah Karyawan
-            </a>
         </div>
 
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -123,9 +139,20 @@
         </div>
     </div>
 
+    <!-- Pagination Links -->
+    <div class="flex items-center justify-between mt-4 px-4">
+        <div class="text-gray-700">
+            Showing <span class="font-semibold">{{ $users->firstItem() }}</span> to <span class="font-semibold">{{ $users->lastItem() }}</span> of <span class="font-semibold">{{ $users->total() }}</span> results
+        </div>
+        <div>
+            {{ $users->links('vendor.pagination.tailwind') }}
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const deleteButtons = document.querySelectorAll('.delete-button');
+
             // Handle dropdown toggle
             document.querySelectorAll('.dropdown-toggle-button').forEach(button => {
                 button.addEventListener('click', function(event) {
@@ -146,11 +173,13 @@
                 });
             });
 
+            // Add click event listener to delete buttons
             deleteButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function(event) {
+                    event.preventDefault(); // Prevent the form from submitting immediately
                     const userId = this.getAttribute('data-user-id');
 
-                    // Show SweetAlert confirmation
+                    // Show SweetAlert confirmation dialog
                     Swal.fire({
                         title: 'Apakah Anda yakin?',
                         text: "Anda tidak bisa mengembalikan User yang dihapus!",
@@ -162,13 +191,14 @@
                         cancelButtonText: 'Batal'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            // If confirmed, submit the form
-                            document.getElementById('delete-form-' + produkId).submit();
+                            // If confirmed, submit the form to delete the user
+                            document.getElementById('delete-form-' + userId).submit();
                         }
                     });
                 });
             });
         });
+
 
         function searchTable() {
             // Get the search input value
