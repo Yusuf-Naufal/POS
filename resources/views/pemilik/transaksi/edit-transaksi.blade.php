@@ -1,5 +1,5 @@
 <x-master-layout>
-    <div class="w-full p-6">
+    <div class="w-full p-2">
         <!-- Header Section -->
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold">Edit Transaksi - Resi: {{ $transaksi->resi }}</h1>
@@ -80,7 +80,7 @@
                             <tr class="bg-white dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                                 <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ $key + 1 }}</td>
                                 <td class="px-6 py-4">
-                                    <select name="produk[{{ $key }}][id]" class="border border-gray-300 rounded-md w-full p-2 produk-select" data-key="{{ $key }}">
+                                    <select name="produk[{{ $key }}][id]" class="min-w-max border border-gray-300 rounded-md w-full p-2 produk-select" data-key="{{ $key }}">
                                         @foreach ($semuaProduks as $produk)
                                             <option value="{{ $produk->id }}" data-price="{{ $produk->harga_jual }}" data-kategori="{{ $produk->kategoris->nama_kategori }}" {{ $produk->id == $items->produk->id ? 'selected' : '' }}>
                                                 {{ $produk->nama_produk }}
@@ -89,10 +89,10 @@
                                     </select>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <input type="text" class="border border-gray-300 rounded-md w-full p-2 kategori-input" value="{{ $items->produk->kategoris->nama_kategori }}" readonly />
+                                    <input type="text" class="w-36 border border-gray-300 rounded-md md:w-full p-2 kategori-input" value="{{ $items->produk->kategoris->nama_kategori }}" readonly />
                                 </td>
                                 <td class="px-6 py-4">
-                                    <input name="produk[{{ $key }}][qty]" type="number" class="border border-gray-300 rounded-md w-full p-2 qty-input" value="{{ $items->qty }}" data-key="{{ $key }}" />
+                                    <input name="produk[{{ $key }}][qty]" type="number" class="w-10 border border-gray-300 rounded-md md:w-full p-2 qty-input" value="{{ $items->qty }}" data-key="{{ $key }}" />
                                 </td>
                                 <td class="px-6 py-4 harga">{{ $items->produk->harga_jual }}</td>
                                 <td class="px-6 py-4">{{ $items->produk->units->nama_unit }}</td>
@@ -147,7 +147,7 @@
                     <!-- Catatan Section -->
                     <div class="space-y-4">
                         <label for="Catatan" class="block text-lg font-semibold text-gray-700">Catatan:</label>
-                        <textarea id="Catatan" name="catatan" rows="10" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-150 ease-in-out">{{ $transaksi->catatan }}</textarea>
+                        <textarea id="catatan_transaksi" name="catatan" rows="10" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-150 ease-in-out">{{ $transaksi->catatan }}</textarea>
                     </div>
 
                     <!-- Summary Section -->
@@ -320,6 +320,8 @@
                 const formData = new FormData(document.getElementById('editForm'));
 
                 const tanggalTransaksi = document.getElementById('tanggal_transaksi').value;
+                const catatanTransaksi =  document.getElementById('catatan_transaksi').value;
+
 
                 // Convert FormData to a structured object
                 const produk = Array.from(formData.entries()).reduce((acc, [key, value]) => {
@@ -359,7 +361,8 @@
                     },
                     body: JSON.stringify({ 
                         produk: filteredProduk,
-                        tanggal_transaksi: tanggalTransaksi
+                        tanggal_transaksi: tanggalTransaksi,
+                        catatan: catatanTransaksi
                      })
                 })
                 .then(response => response.json())

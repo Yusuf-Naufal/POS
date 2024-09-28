@@ -40,4 +40,9 @@ class Produk extends Model
         return $this->belongsTo(Outlet::class, 'id_outlet');
     }
 
+    public function detailTransaksi()
+    {
+        return $this->hasMany(Detail_Transaksi::class, 'id_produk');
+    }
+
 }

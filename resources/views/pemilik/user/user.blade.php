@@ -1,6 +1,6 @@
 <x-master-layout>
     <div class="w-full justify-start">
-        <div class="flex justify-between mt-7 w-full">
+        <div class="flex justify-between w-full">
             <h1 class="text-3xl font-bold">Daftar Karyawan</h1>
         </div>
 

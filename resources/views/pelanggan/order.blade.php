@@ -6,42 +6,60 @@
         <h1 class="font-semibold text-3xl text-center mt-3 text-purple-700">{{ $outlet->nama_outlet }} - Menu Produk</h1>
         <input class="hidden" id="IdOutlet" value="{{ $outlet->id }}"></input>
 
-        <!-- Daftar Produk -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6 px-4">
-            @foreach ($produks as $item)
-            <div class="p-4 bg-white rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer relative"
-                data-id="{{ $item->id }}" data-price="{{ $item->harga_jual }}">
-                
-                <div class="flex items-center space-x-4 {{ $item->status === 'Habis' ? 'cursor-not-allowed' : 'cursor-pointer' }} relative" {{ $item->status === 'Habis' ? '' : 'onclick=toggleItem(event)' }}>
-                    <div class="relative">
-                        <img class="w-16 h-16 rounded-lg object-cover shadow-md" src="{{ asset('storage/assets/' . $item->foto ) }}" alt="Product Image">
-
-                        @if($item->status === 'Habis')
-                        <!-- Watermark overlay when the product is out of stock -->
-                        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
-                            <span class="text-white text-lg font-bold">Habis</span>
-                        </div>
-                        @endif
-                    </div>
-                    <div class="text-left">
-                        <p class="font-semibold text-lg text-purple-800">{{ $item->nama_produk }}</p>
-                        <p class="text-sm text-gray-600">Rp. {{ number_format($item->harga_jual, 0, ',', '.') }}</p>
-                    </div>
-                </div>
-
-                <!-- Quantity controls (visible if quantity > 0) -->
-                <div class="mt-4" id="controls-{{ $item->id }}" style="display: none;">
-                    <div class="flex items-center space-x-4">
-                        <button onclick="decrementQuantity(event)" class="bg-red-500 text-white px-4 py-2 rounded">-</button>
-                        <span class="text-lg font-semibold" id="quantity-{{ $item->id }}">0</span>
-                        <button onclick="incrementQuantity(event)" class="bg-green-500 text-white px-4 py-2 rounded">+</button>
-                    </div>
-                    <p class="mt-2 text-sm">Total Harga: Rp. <span id="price-{{ $item->id }}">0</span></p>
-                </div>
-            </div>
-            @endforeach
+        <!-- Search Input -->
+        <div class="relative flex items-center w-full mt-2">
+            <input 
+                type="text" 
+                id="simple-search" 
+                class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block w-full p-3 pl-10 transition ease-in-out duration-300 shadow-sm hover:shadow-lg" 
+                placeholder="Search Produk name..." 
+                required
+            />
+            <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 19l-3.5-3.5m0 0a7 7 0 111.5-1.5l-3.5 3.5z" />
+            </svg>
         </div>
 
+        <!-- Daftar Produk -->
+        <div id="produk-list" class="mt-6">
+            @foreach ($groupedProduks as $kategoriId => $produkGroup)
+                <h2 class="text-xl font-semibold text-purple-800 mt-4">{{ $produkGroup->first()->kategoris->nama_kategori }}</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-2">
+                    @foreach ($produkGroup as $item)
+                    <div class="produk-item p-4 bg-white rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 cursor-pointer relative"
+                        data-id="{{ $item->id }}" data-price="{{ $item->harga_jual }}">
+                        
+                        <div class="flex items-center space-x-4 {{ $item->status === 'Habis' ? 'cursor-not-allowed' : 'cursor-pointer' }} relative" {{ $item->status === 'Habis' ? '' : 'onclick=toggleItem(event)' }}>
+                            <div class="relative">
+                                <img class="w-16 h-16 rounded-lg object-cover shadow-md" src="{{ asset('storage/assets/' . $item->foto ) }}" alt="Product Image">
+
+                                @if($item->status === 'Habis')
+                                <!-- Watermark overlay when the product is out of stock -->
+                                <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+                                    <span class="text-white text-lg font-bold">Habis</span>
+                                </div>
+                                @endif
+                            </div>
+                            <div class="text-left">
+                                <p class="font-semibold text-lg text-purple-800 produk-name">{{ $item->nama_produk }}</p>
+                                <p class="text-sm text-gray-600">Rp. {{ number_format($item->harga_jual, 0, ',', '.') }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Quantity controls (visible if quantity > 0) -->
+                        <div class="mt-4" id="controls-{{ $item->id }}" style="display: none;">
+                            <div class="flex items-center space-x-4">
+                                <button onclick="decrementQuantity(event)" class="bg-red-500 text-white px-4 py-2 rounded">-</button>
+                                <span class="text-lg font-semibold" id="quantity-{{ $item->id }}">0</span>
+                                <button onclick="incrementQuantity(event)" class="bg-green-500 text-white px-4 py-2 rounded">+</button>
+                            </div>
+                            <p class="mt-2 text-sm">Total Harga: Rp. <span id="price-{{ $item->id }}">0</span></p>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            @endforeach
+        </div>
 
         <!-- Button to Open Modal -->
         <button onclick="toggleModal()" id="modalButton" class="fixed bottom-4 right-4 bg-blue-700 text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">
@@ -49,7 +67,6 @@
         </button>
     </div>
 
-    <!-- Responsive Modal for Order Review with Scrollable Body -->
     <div id="orderReviewModal" class="modal-order fixed inset-0 flex items-center justify-center hidden w-full bg-gray-800 bg-opacity-75">
         <div class="bg-white rounded-lg shadow-lg w-full max-w-md md:min-w-[70%] transform transition-all duration-300">
             <form id="orderFormContent" class="space-y-4">
@@ -83,22 +100,22 @@
                             <!-- Nama Pemesan -->
                             <div>
                                 <label for="nama_pemesan" class="block text-sm font-medium text-gray-600 mb-1">Nama Pemesan</label>
-                                <input type="text" id="nama_pemesan" name="nama_pemesan" class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-200 focus:border-blue-500" placeholder="Masukkan nama" required>
+                                <input type="text" id="nama_pemesan" maxlength="20" name="nama_pemesan" class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-200 focus:border-blue-500" placeholder="Masukkan nama" required>
                             </div>
                             <!-- No Telp -->
                             <div>
                                 <label for="no_telp" class="block text-sm font-medium text-gray-600 mb-1">No. Telp <span class="text-red-500 font-thin">*(nomor aktif)</span></label>
-                                <input type="text" id="no_telp" name="no_telp" class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-200 focus:border-blue-500" placeholder="No Wa Anda" required>
+                                <input type="text" id="no_telp" name="no_telp"  oninput="this.value=this.value.replace(/[^0-9 +\-]/g,'');" class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-200 focus:border-blue-500" placeholder="No Wa Anda" required>
                             </div>
                             <!-- Jam Mengambil -->
                             <div>
                                 <label for="jam_mengambil" class="block text-sm font-medium text-gray-600 mb-1">Jam Mengambil</label>
-                                <input type="time" id="jam_mengambil" name="jam_mengambil" class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-200 focus:border-blue-500">
+                                <input type="time" id="jam_mengambil" name="jam_mengambil" class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-200 focus:border-blue-500" required>
                             </div>
                             <!-- Pembayaran -->
                             <div>
                                 <label for="pembayaran" class="block text-sm font-medium text-gray-600 mb-1">Pembayaran</label>
-                                <select name="pembayaran" id="" class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-200 focus:border-blue-500">
+                                <select name="pembayaran" id="" class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring focus:ring-blue-200 focus:border-blue-500" required>
                                     <option value="" disabled selected>Pilih Metode Pembayaran</option>
                                     <option value="Cash">Cash</option>
                                 </select>
@@ -277,13 +294,10 @@
             }
         }
 
-
         document.getElementById('submit-order').addEventListener('click', async function(event) {
             event.preventDefault(); 
 
-            // Disable buttons to prevent multiple submissions
-            document.getElementById('submit-order').disabled = true;
-
+            const submitButton = document.getElementById('submit-order');
             const orderListItems = document.querySelectorAll('#orderItemsList .flex');
 
             if (orderListItems.length === 0) {
@@ -291,14 +305,62 @@
                     icon: 'warning',
                     title: 'Belum Ada Order',
                     text: 'Tidak ada item di dalam daftar pesanan.',
-                    confirmButtonText: 'OK'
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#3085d6',
                 });
                 return;
             }
 
+            // Validasi Form Pesanan
+            const namaPemesan = document.getElementById('nama_pemesan').value.trim();
+            const noTelp = document.getElementById('no_telp').value.trim();
+            const jamMengambil = document.getElementById('jam_mengambil').value;
+            const pembayaran = document.querySelector('select[name="pembayaran"]').value;
+            
+            if (!namaPemesan || !noTelp || !jamMengambil || !pembayaran) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Form Tidak Lengkap',
+                    text: 'Mohon isi semua kolom yang diperlukan.',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#3085d6',
+                });
+                return;
+            }
+
+            // Tampilkan konfirmasi sebelum melanjutkan
+            const confirmation = await Swal.fire({
+                title: 'Konfirmasi Order',
+                text: 'Apakah Anda yakin ingin melakukan order ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Lanjutkan',
+                cancelButtonText: 'Tidak',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+            });
+
+            // Jika pengguna memilih 'Tidak', hentikan eksekusi
+            if (!confirmation.isConfirmed) {
+                return;
+            }
+
+            // Show loading spinner using SweetAlert2
+            Swal.fire({
+                title: 'Proses Pesanan Sedang Berlangsung...',
+                text: 'Mohon tunggu, pesanan Anda sedang diproses.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             // Collect order data
             const orderItems = [];
-            const items = Array.from(orderListItems).map(item => {
+            Array.from(orderListItems).forEach(item => {
                 const quantityElement = item.querySelector('.quantity-input');
                 const priceElement = item.querySelector('.price');
                 const idElement = item.querySelector('.id_produks');
@@ -315,40 +377,20 @@
                         price: price,
                         subtotal: subtotal
                     });
-                } else {
-                    // console.error('Missing quantity, price, or product ID element');
                 }
             });
 
-            const namaPemesan = document.getElementById('nama_pemesan').value;
-            const IdOutlet = document.getElementById('IdOutlet').value;
-            const noTelp = document.getElementById('no_telp').value;
-            const jamMengambil = document.getElementById('jam_mengambil').value;
-            const pembayaran = document.querySelector('select[name="pembayaran"]').value;
-            const catatan = document.getElementById('catatan').value;
-            const resiNumber = document.getElementById('resi').value; // Assuming resi is already set
+            const resiNumber = document.getElementById('resi').value;
             const tanggalTransaksi = new Date().toISOString().slice(0, 10);
+
+            const catatan = document.getElementById('catatan').value.trim();
+            const IdOutlet = document.getElementById('IdOutlet').value; 
 
             const totalQty = orderItems.reduce((sum, item) => sum + item.quantity, 0);
             const totalBelanja = orderItems.reduce((sum, item) => sum + item.subtotal, 0);
 
-            // Show loading spinner using SweetAlert2
-            Swal.fire({
-                title: 'Proses Pesanan Sedang Berlangsung...',
-                text: 'Mohon tunggu, pesanan Anda sedang diproses.',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                allowEnterKey: false,
-                showConfirmButton: false,
-                didOpen: () => {
-                    Swal.showLoading(); // Display the loading spinner
-                }
-            });
-
-
             // Send data to the server
             try {
-                console.log('resiNumber', resiNumber, namaPemesan);
                 const response = await fetch('/pesanan', {
                     method: 'POST',
                     headers: {
@@ -375,29 +417,17 @@
                 if (response.ok) {
                     const data = await response.json();
 
-                    // const waMessage = `Halo, berikut adalah detail pesanan Anda:\n\n` +
-                    //     `Resi: ${resiNumber}\n` +
-                    //     `Pemesan: ${namaPemesan}\n` +
-                    //     `No Telp: ${noTelp}\n` +
-                    //     `Tanggal: ${tanggalTransaksi}\n` +
-                    //     `Jam Ambil: ${jamMengambil}\n\n` +
-                    //     `Detail Pesanan:\n` +
-                    //     orderItems.map(item => `${item.nama_produk} x ${item.qty} - Rp. ${item.subtotal.toLocaleString('id-ID')}`).join('\n') + `\n\n` +
-                    //     `Total Qty: ${totalQty}\n` +
-                    //     `Total Belanja: Rp. ${totalBelanja.toLocaleString('id-ID')}\n\n` +
-                    //     `*Tunjukkan struk ini untuk mengambil pesanan*`;
-
-                    // // Open WhatsApp with the pre-filled message
-                    // window.open(`https://wa.me/${noTelp}?text=${encodeURIComponent(waMessage)}`, '_blank');
-
-
-                    // Redirect to order details page with the generated resi number
+                    // SweetAlert for success message
                     Swal.fire({
                         icon: 'success',
                         title: 'Order Berhasil',
                         text: 'Terima kasih, Order Anda Akan Segera di Proses!',
-                        confirmButtonText: 'OK'
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#3085d6',
                     }).then(() => {
+                        // Disable the button after successful order
+                        submitButton.disabled = true;
+
                         // Redirect to the order details page with the resi number
                         window.location.href = `/struk-order/${data.order_id}`;
                     });
@@ -408,7 +438,8 @@
                         icon: 'error',
                         title: 'Order Gagal',
                         text: 'Gagal melakukan order. Silakan coba lagi.',
-                        confirmButtonText: 'OK'
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#3085d6',
                     });
                 }
             } catch (error) {
@@ -417,12 +448,11 @@
                     icon: 'error',
                     title: 'Order Gagal',
                     text: 'Gagal melakukan order. Silakan coba lagi.',
-                    confirmButtonText: 'OK'
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#3085d6',
                 });
             }
-
         });
-
 
         function generateResi() {
             // Helper function to generate random letters
@@ -461,6 +491,25 @@
             return resiNumber.toUpperCase(); // Ensure the result is in uppercase
         }
 
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('simple-search');
+            const outletItems = document.querySelectorAll('.produk-item');
+
+            searchInput.addEventListener('input', function () {
+                const searchTerm = searchInput.value.toLowerCase();
+
+                // Loop through all outlet items and hide those that don't match the search term
+                outletItems.forEach(function (item) {
+                    const outletName = item.querySelector('.produk-name').textContent.toLowerCase();
+
+                    if (outletName.includes(searchTerm)) {
+                        item.style.display = 'block';  // Show the item if it matches
+                    } else {
+                        item.style.display = 'none';   // Hide the item if it doesn't match
+                    }
+                });
+            });
+        });
 
     </script>
 

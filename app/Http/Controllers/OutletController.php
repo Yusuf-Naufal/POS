@@ -40,11 +40,22 @@ class OutletController extends Controller
             'email' => 'nullable|email|max:255',
             'pemilik' => 'nullable|string|max:255',
             'alamat' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image
+            'image' => 'nullable|image|mimes:jpeg,png,jpg',
+            'jam_buka' => 'nullable',
+            'jam_tutup' => 'nullable', // Validate image
         ]);
 
         if ($validation->fails()) {
-            return back()->withErrors($validation);
+            if ($request->filled('email') && Outlet::where('email', $request->email)->exists()) {
+                return redirect()->back()->withErrors([
+                    'email' => 'Email sudah ada, silakan gunakan email lain.'
+                ])->withInput();
+            }
+
+            // General validation error message
+            return redirect()->back()->withErrors([
+                'error' => 'Tambah Outlet error, Pastikan semua data terisi'
+            ])->withInput();
         }
 
         $foto = time() . '.' . $request->foto->extension();
@@ -61,10 +72,12 @@ class OutletController extends Controller
         $outlet->tiktok = $request->tiktok;
         $outlet->alamat = $request->alamat;
         $outlet->foto = 'outlet/' . $foto;
+        $outlet->jam_buka = $request->jam_buka;
+        $outlet->jam_tutup = $request->jam_tutup;
         
         $outlet->save();
 
-        return redirect()->route('outlets.index')->with('success', 'Outlet added successfully.');
+        return redirect()->route('outlets.index')->with('success', 'Outlet Berhasil Ditambah');
     }
 
     public function edit($id)
@@ -96,11 +109,22 @@ class OutletController extends Controller
             'email' => 'nullable|email|max:255',
             'pemilik' => 'nullable|string|max:255',
             'alamat' => 'required|string|max:255',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg',
+            'jam_buka' => 'nullable',
+            'jam_tutup' => 'nullable',
         ]);
 
         if ($validation->fails()) {
-            return back()->withErrors($validation)->withInput();
+            if ($request->filled('email') && Outlet::where('email', $request->email)->exists()) {
+                return redirect()->back()->withErrors([
+                    'email' => 'Email sudah ada, silakan gunakan email lain.'
+                ])->withInput();
+            }
+
+            // General validation error message
+            return redirect()->back()->withErrors([
+                'error' => 'Tambah Outlet error, Pastikan semua data terisi'
+            ])->withInput();
         }
 
         $outlet = Outlet::findOrFail($id);
@@ -130,12 +154,14 @@ class OutletController extends Controller
         $outlet->facebook = $request->facebook;
         $outlet->tiktok = $request->tiktok;
         $outlet->status = $request->status;
+        $outlet->jam_buka = $request->jam_buka;
+        $outlet->jam_tutup = $request->jam_tutup;
         $outlet->save();
 
         if (auth()->user()->role === 'Admin') {
-            return redirect()->route('outlets.index')->with('success', 'Outlet updated successfully!');
+            return redirect()->route('outlets.index')->with('success', 'Outlet Berhasil Diupdate');
         }else{
-            return redirect()->route('master.dashboard')->with('success', 'Outlet updated successfully!');
+            return redirect()->route('master.dashboard')->with('success', 'Outlet Berhasil Diupdate');
         }
     }
 
@@ -169,12 +195,11 @@ class OutletController extends Controller
             // Finally, delete the outlet record
             $outlet->delete();
 
-            return redirect()->route('outlets.index')->with('success', 'Outlet and its products (including photos) deleted successfully.');
+            return redirect()->route('outlets.index')->with('success', 'Outlet dan Produknya Dihapus!');
         }
 
         return redirect()->route('outlets.index')->with('error', 'Outlet not found.');
     }
-
 
     public function deactivate($id)
     {

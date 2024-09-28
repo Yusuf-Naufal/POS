@@ -32,19 +32,37 @@
         </div>
 
         <!-- Outlet Cards -->
-        <div id="outlet-list" class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6 px-4">
+        <div id="outlet-list" class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6 px-1">
             @foreach ($Outlet as $outlet)
-            <div class="outlet-item p-4 bg-white rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300">
-                <a href="{{ route('order.form', ['id' => $outlet->id]) }}" class="flex items-center space-x-4">
-                    <img class="w-16 h-16 rounded-lg object-cover shadow-md" src="{{ asset('storage/assets/' . $outlet->foto ) }}" alt="Outlet Image">
-                    <div class="text-left">
-                        <p class="font-semibold text-lg text-purple-800 outlet-name">{{ $outlet->nama_outlet }}</p>
-                        <p class="text-sm text-gray-600">{{ $outlet->pemilik }}</p>
-                    </div>
-                </a>
-            </div>
+                @php
+                    $isClosed = now()->setTimezone('Asia/Jakarta')->toTimeString() < $outlet->jam_buka || now()->setTimezone('Asia/Jakarta')->toTimeString() >= $outlet->jam_tutup;
+                @endphp
+                
+                <div class="outlet-item relative p-4 bg-white rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out">
+                    <a href="{{ !$isClosed ? route('order.form', ['id' => $outlet->id]) : 'javascript:void(0)' }}" class="flex items-center space-x-6 @if($isClosed) pointer-events-none @endif">
+                        <div class="relative">
+                            <img class="w-20 h-20 rounded-lg object-cover shadow-md" src="{{ asset('storage/assets/' . $outlet->foto ) }}" alt="Outlet Image">
+                            @if($isClosed)
+                                <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
+                                    <span class="text-white text-lg font-bold">Tutup</span>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="text-left">
+                            <p class="font-bold text-xl text-purple-800 outlet-name">{{ $outlet->nama_outlet }}</p>
+                            <div class="flex items-center space-x-2 text-sm text-gray-500 mt-1">
+                                <p class="font-semibold text-gray-700">{{ \Carbon\Carbon::parse($outlet->jam_buka)->format('H:i') }}</p>
+                                <span class="text-gray-400">-</span>
+                                <p class="font-semibold text-gray-700">{{ \Carbon\Carbon::parse($outlet->jam_tutup)->format('H:i') }}</p>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-1">{{ $outlet->pemilik }}</p>
+                        </div>
+                    </a>
+                </div>
             @endforeach
         </div>
+
+
     </div>
 
     {{-- Modal cek resi --}}

@@ -1,6 +1,6 @@
 <x-master-layout>
     <div class="w-full">
-        <div class="flex justify-between mt-7">
+        <div class="flex justify-between">
             <h1 class="text-3xl font-bold">Daftar Produk : </h1>
         </div>
         <div class="flex justify-between flex-wrap items-center mt-1 p-1">

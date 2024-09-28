@@ -1,5 +1,5 @@
 <x-master-layout>
-    <div class="w-full p-6">
+    <div class="w-full p-2">
         <!-- Header Section -->
         <div class="flex flex-col lg:flex-row justify-between items-center mb-6 p-4 bg-white shadow rounded-lg">
             <h1 class="text-2xl font-bold text-gray-800">Resi: {{ $transaksi->resi }}</h1>
@@ -73,9 +73,16 @@
             </div>
         </div>
 
+        <div class="w-full flex justify-end my-3">
+                <label for="simple-search" class="sr-only">Search</label>
+                <div class="relative">
+                    <input type="text" id="simple-search" onkeyup="searchTable()" class="md:w-56 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Produk..." required />
+                </div>
+        </div>
+
         <!-- Order Details Table -->
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg mb-6">
-            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <table id="produk-table" class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                         <th class="px-6 py-3">No</th>
@@ -113,7 +120,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="Catatan" class="font-semibold mb-2 block text-gray-700">Catatan:</label>
-                    <textarea id="Catatan" rows="10" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200">{{ $transaksi->catatan }}</textarea>
+                    <textarea id="Catatan" rows="10" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition duration-200" readonly>{{ $transaksi->catatan }}</textarea>
                 </div>
 
                 <div class="space-y-4">
@@ -148,4 +155,35 @@
         </div>
 
     </div>
+
+    <script>
+        function searchTable() {
+            // Get the search input value
+            const input = document.getElementById('simple-search');
+            const filter = input.value.toLowerCase();
+
+            // Get the table and tbody elements
+            const table = document.getElementById('produk-table');
+            const tbody = table.getElementsByTagName('tbody')[0];
+            const rows = tbody.getElementsByTagName('tr');
+
+            // Loop through all table rows and hide those that don't match the search input
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let matched = false;
+
+                // Loop through all cells in the current row
+                for (let j = 0; j < cells.length; j++) {
+                    const cell = cells[j];
+                    if (cell.textContent.toLowerCase().includes(filter)) {
+                        matched = true;
+                        break;
+                    }
+                }
+
+                // Show or hide the row based on whether it matched
+                rows[i].style.display = matched ? '' : 'none';
+            }
+        }
+    </script>
 </x-master-layout>

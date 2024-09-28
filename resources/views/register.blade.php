@@ -3,9 +3,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Register Pemilik</title>
     @vite('resources/css/app.css')
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet" />
+
+    <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
 </head>
 <body class="min-h-screen flex items-center justify-center bg-gray-100">
     <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data" class="w-full max-w-xl lg:min-w-fit mx-auto h-auto p-6 md:p-8">
@@ -14,20 +17,20 @@
             <!-- Registration Form -->
             <div id="registrationForm" class="space-y-6 lg:min-w-[400px]">
                 <h2 class="text-2xl font-bold text-center text-gray-900">Register Pemilik</h2>
-                <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" id="email" name="email" required
-                        class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                <div class="w-full mb-4">
+                    <label class="block text-sm font-medium text-gray-700" for="email">Email</label>
+                    <input type="email" id="email" name="email"  
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder='example@test.com' required> 
                 </div>
 
                 <div class="mb-6 relative">
-                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password <span class="font-thin text-gray-600">(min 6)</label>
                     <div class="flex items-center relative">
                         <input type="password" id="password" name="password" required
-                            class="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         
                         <button type="button" id="togglePassword"
-                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 mt-2">
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 mt-1">
                             <svg id="eyeIcon" class="h-5 w-5 text-gray-500" fill="none"
                                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -83,20 +86,20 @@
                         <!-- Form Fields -->
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700" for="nama">Nama Lengkap</label>
-                            <input type="text" id="nama" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="nama">
+                            <input type="text" id="nama" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="nama" placeholder='Nama Lengkap Anda'>
                         </div>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700" for="username">Username</label>
-                            <input type="text" id="username" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="username">
+                            <input type="text" id="username" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="username" placeholder='Username Akun'>
                         </div>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700" for="no_telp">No Telepon</label>
-                            <input type="text" id="no_telp" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="no_telp">
+                            <input type="text" id="no_telp" maxlength="13" pattern="[0-9]*" oninput="this.value=this.value.replace(/[^0-9]/g,'');" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="no_telp">
                         </div>
                         
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700" for="tanggal_lahir">Tanggal Lahir</label>
-                            <input type="date" id="tanggal_lahir" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="tanggal_lahir">
+                            <input type="date" id="tanggal_lahir" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="tanggal_lahir" required>
                         </div>
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700" for="jenis_kelamin">Jenis Kelamin</label>
@@ -107,7 +110,7 @@
                         </div>
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700" for="alamat">Alamat</label>
-                            <input type="text" id="alamat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="alamat">
+                            <input type="text" id="alamat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="alamat" required>
                         </div>
 
                         <!-- Buttons -->
@@ -152,7 +155,7 @@
                 </div>
                 <!-- Modal footer -->
                 <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                    <button data-modal-hide="default-modal" onclick="takeSnapshot()" type="button" class="mt-2 p-2 bg-green-500 text-white rounded">Capture</button>
+                    <button data-modal-hide="default-modal" onclick="takeSnapshot()" type="button" class="p-2 bg-green-500 text-white rounded">Capture</button>
                     <button data-modal-hide="default-modal" onclick="closeModal()" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Batal</button>
                 </div>
             </div>
@@ -162,7 +165,41 @@
 
     <!-- SCRIPT -->
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
+
+    {{-- SWEETALERT --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script>
+
+        @if ($errors->any())
+            let errorMessages = '';
+            @if ($errors->has('email'))
+                errorMessages += '{{ addslashes($errors->first('email')) }}\n'; // Specific email error
+            @endif
+            @if ($errors->has('error'))
+                errorMessages += '{{ addslashes($errors->first('error')) }}\n'; // General registration error
+            @endif
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: "error",
+                title: "Registration gagal!",
+                text: errorMessages // Display all error messages here
+            });
+        @endif
+
+
         const togglePassword = document.querySelector('#togglePassword');
         const password = document.querySelector('#password');
         const eyeIcon = document.querySelector('#eyeIcon');
@@ -185,8 +222,21 @@
         });
 
         nextButton.addEventListener('click', function () {
-            registrationForm.style.display = 'none';
-            completeProfileForm.style.display = 'block';
+            const emailInput = document.getElementById('email').value;
+            const passwordInput = document.getElementById('password').value;
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (emailPattern.test(emailInput) && passwordInput.length >= 6 ) {
+                registrationForm.style.display = 'none';
+                completeProfileForm.style.display = 'block';
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Data tidak valid!',
+                    text: `Isi email dan password sesuai dengan ketentuan!!`,
+                    confirmButtonColor: '#3085d6',
+                });
+            }
         });
 
         backButton.addEventListener('click', function () {
@@ -274,6 +324,8 @@
             return new File([u8arr], filename, { type: mime });
         }
     </script>
+
+    
 
 </body>
 </html>

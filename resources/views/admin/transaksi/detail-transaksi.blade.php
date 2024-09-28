@@ -1,15 +1,15 @@
 <x-admin-layout>
-    <div class="w-full p-6">
+    <div class="w-full p-2">
         <!-- Header Section -->
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col lg:flex-row justify-between items-center mb-6 p-4 bg-white shadow rounded-lg">
             <h1 class="text-2xl font-bold">Resi: {{ $transaksi->resi }}</h1>
             <div class="flex gap-2">
                 <button type="button" class="text-purple-700 hover:text-white border border-purple-700 hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900">
                     Print
                 </button>
-                <button type="button" class="bg-purple-700 text-white hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
+                <a href="{{ route('admin.transaksi.edit', $transaksi->resi) }}" type="button" class="bg-purple-700 text-white hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900">
                     Ubah
-                </button>
+                </a>
                 <button id="dropdownMenuIconButton" data-dropdown-toggle="dropdownDots" class="bg-white text-gray-900 hover:bg-gray-100 focus:ring-4 focus:ring-gray-50 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-600 rounded-lg p-2 text-sm">
                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 4 15">
                         <path d="M3.5 1.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 6.041a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Zm0 5.959a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/>

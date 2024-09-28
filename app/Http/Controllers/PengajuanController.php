@@ -35,15 +35,26 @@ class PengajuanController extends Controller
          $validation = Validator::make($request->all(), [
             'nama_outlet' => 'required|string|max:255',
             'no_telp' => 'nullable|string|max:20',
-            'pin' => 'nullable|string|max:4',
+            'pin' => 'nullable|string|min:4',
             'email' => 'nullable|email|max:255',
             'id_pemilik' => 'required|exists:users,id',
             'alamat' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image
+            'image' => 'nullable|image|mimes:jpeg,png,jpg',
+            'jam_buka' => 'nullable',
+            'jam_tutup' => 'nullable', // Validate image
         ]);
 
         if ($validation->fails()) {
-            return back()->withErrors($validation);
+            if ($request->filled('email') && Outlet::where('email', $request->email)->exists()) {
+                return redirect()->back()->withErrors([
+                    'email' => 'Email sudah ada, silakan gunakan email lain.'
+                ])->withInput();
+            }
+
+            // General validation error message
+            return redirect()->back()->withErrors([
+                'error' => 'Pengajuan error, coba ulang lagi.'
+            ])->withInput();
         }
 
         $foto = time() . '.' . $request->foto->extension();
@@ -60,6 +71,8 @@ class PengajuanController extends Controller
         $outlet->tiktok = $request->tiktok;
         $outlet->alamat = $request->alamat;
         $outlet->foto = 'outlet/' . $foto;
+        $outlet->jam_buka = $request->jam_buka;
+        $outlet->jam_tutup = $request->jam_tutup;
         
         $outlet->save();
 
@@ -111,10 +124,7 @@ class PengajuanController extends Controller
         $pengajuan->status = 'Rejected';
         $pengajuan->save();
 
-        // Dispatch a job to delete the pengajuan after 1 day
-        TimeToDelete::dispatch($pengajuan->id)->delay(now()->addDay());
-        // TimeToDelete::dispatch($pengajuan->id)->delay(now()->addSeconds(30));
-
+       
         // Redirect back with success message
         return response()->json(['success' => true, 'message' => 'Pengajuan rejected successfully.']);
     }

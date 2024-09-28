@@ -1,7 +1,7 @@
 <x-master-layout>
-    <div class="w-full px-4 py-6 bg-gray-50">
+    <div class="w-full">
         {{-- INFO KEPEMILIKAN OUTLET --}}
-        <h1 class="text-4xl font-extrabold text-gray-900 mb-6">Informasi Outlet</h1>
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Informasi Outlet</h1>
 
         <div class="flex flex-col md:flex-row gap-8 bg-white shadow-lg rounded-lg p-6">
             <!-- Image Section -->
@@ -22,19 +22,19 @@
                 <div class="space-y-4">
                     <div class="flex items-center">
                         <label class="w-1/3 font-semibold text-gray-700">Nama Pemilik:</label>
-                        <p class="w-2/3 text-gray-600">{{ $Outlet->pemilik }}</p>
+                        <p class="w-2/3 text-gray-600 text-left">{{ $Outlet->pemilik }}</p>
                     </div>
                     <div class="flex items-center">
                         <label class="w-1/3 font-semibold text-gray-700">Email Outlet:</label>
-                        <p class="w-2/3 text-gray-600">{{ $Outlet->email }}</p>
+                        <p class="w-2/3 text-gray-600 text-left">{{ $Outlet->email }}</p>
                     </div>
                     <div class="flex items-center">
                         <label class="w-1/3 font-semibold text-gray-700">Contact:</label>
-                        <p class="w-2/3 text-gray-600">{{ $Outlet->no_telp }}</p>
+                        <p class="w-2/3 text-gray-600 text-left">{{ $Outlet->no_telp }}</p>
                     </div>
                     <div class="flex items-center">
                         <label class="w-1/3 font-semibold text-gray-700">Status:</label>
-                        <p class="w-2/3 text-gray-600">{{ $Outlet->status }}</p>
+                        <p class="w-2/3 text-gray-600 text-left">{{ $Outlet->status }}</p>
                     </div>
                 </div>
 
@@ -66,7 +66,7 @@
 
         {{-- INFORMASI PENJUALAN --}}
         <div class="flex justify-between items-center flex-row mb-6 mt-4">
-            <h1 class="text-4xl font-extrabold text-gray-900 mb-4 md:mb-0">Informasi Penjualan</h1>
+            <h1 class="text-4xl font-extrabold text-gray-900">Informasi Penjualan</h1>
             <div class="flex items-center space-x-4">
                 <div class="rounded-lg px-4 py-2 bg-green-50 border border-green-300 text-green-800 shadow-md">
                     <span class="font-semibold">Hari ini</span>
@@ -135,7 +135,7 @@
 
 
         {{-- STATISTIK PENJUALAN --}}
-        <div class="container mx-auto px-4">
+        <div class="container mx-auto">
             <h1 class="text-4xl font-extrabold text-gray-900 mb-6 mt-4 text-left">Statistik Penjualan</h1>
             
             <div class="flex justify-start mb-6">
@@ -172,6 +172,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            
             const fetchData = (periode) => {
                 fetch(`/get-statistics?periode=${periode}`, {
                     headers: {
@@ -265,5 +266,6 @@
             fetchData('hari');
         });
 
+        
     </script>
 </x-master-layout>

@@ -1,5 +1,5 @@
 <x-admin-layout>
-    <div class="w-full p-6">
+    <div class="w-full p-2">
         <h1 class="text-2xl font-bold mb-4">Tambah Outlet</h1>
 
         <!-- Card Container -->
@@ -7,7 +7,7 @@
             <form id="outlet-form" action="{{ route('outlets.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="flex flex-wrap gap-4">
-                    <div class="flex w-full gap-4">
+                    <div class="flex w-full flex-col lg:flex-row items-center gap-4">
                         <div>
                             <!-- Upload Image Section -->
                             <div class="flex items-center justify-center w-64 h-64">
@@ -37,21 +37,21 @@
                             <!-- Form Fields -->
                             <div class="mb-4 w-full">
                                 <label class="block text-sm font-medium text-gray-700" for="nama_outlet">Nama Outlet</label>
-                                <input type="text" id="nama_outlet" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="nama_outlet">
+                                <input type="text" id="nama_outlet" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="nama_outlet" required>
                             </div>
 
-                            <div class="flex gap-4">
+                            <div class="flex gap-4 flex-col lg:flex-row ">
                                 <div class="w-full md:w-1/3 mb-4">
-                                    <label class="block text-sm font-medium text-gray-700" for="no_telp">Telepon</label>
-                                    <input type="text" id="no_telp" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="no_telp">
+                                    <label class="block text-sm font-medium text-gray-700" for="no_telp">Telepon <span class="font-thin text-gray-600">(Nomor outlet)</label>
+                                    <input type="text" id="no_telp" maxlength="13" pattern="[0-9]*" oninput="this.value=this.value.replace(/[^0-9 +\-]/g,'');" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="no_telp" required>
                                 </div>
                                 <div class="w-full md:w-1/3 mb-4">
-                                    <label class="block text-sm font-medium text-gray-700" for="email">Email</label>
-                                    <input type="text" id="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="email">
+                                    <label class="block text-sm font-medium text-gray-700" for="email">Email <span class="font-thin text-gray-600">(Email outlet)</label>
+                                    <input type="text" id="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="email" required>
                                 </div>
                                 <div class="w-full md:w-1/3 mb-4">
                                     <label class="block text-sm font-medium text-gray-700" for="pemilik">Pemilik</label>
-                                    <select name="pemilik" id="" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                    <select name="pemilik" id="" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" required>
                                         <option value="" selected disabled>Pilih Pemilik</option>
                                         @foreach ($Users as $user)
                                             <option value="{{ $user->nama }}">{{ $user->nama }}</option>
@@ -60,18 +60,18 @@
                                 </div>
                             </div>
 
-                            <div class="flex gap-4">
+                            <div class="flex gap-4 flex-col lg:flex-row ">
                                 <div class="w-full md:w-1/3 mb-4">
-                                    <label class="block text-sm font-medium text-gray-700" for="instagram">Instagram</label>
-                                    <input type="text" id="instagram" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="instagram">
+                                    <label class="block text-sm font-medium text-gray-700" for="instagram">Instagram <label class="font-thin text-gray-500">(Opsional)</label>
+                                    <input type="text" id="instagram" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="instagram" placeholder="Username Instagram">
                                 </div>
                                 <div class="w-full md:w-1/3 mb-4">
-                                    <label class="block text-sm font-medium text-gray-700" for="facebook">Facebook</label>
-                                    <input type="text" id="facebook" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="facebook">
+                                    <label class="block text-sm font-medium text-gray-700" for="facebook">Facebook <label class="font-thin text-gray-500">(Opsional)</label>
+                                    <input type="text" id="facebook" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="facebook" placeholder="Username Facebook">
                                 </div>
                                 <div class="w-full md:w-1/3 mb-4">
-                                    <label class="block text-sm font-medium text-gray-700" for="tiktok">Tiktok</label>
-                                    <input type="text" id="tiktok" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="tiktok">
+                                    <label class="block text-sm font-medium text-gray-700" for="tiktok">Tiktok <label class="font-thin text-gray-500">(Opsional)</label>
+                                    <input type="text" id="tiktok" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="tiktok" placeholder="Username Tiktok">
                                 </div>
                             </div>
                         </div>
@@ -79,20 +79,31 @@
 
                     <div class="mb-4 w-full">
                         <label class="block text-sm font-medium text-gray-700" for="alamat">Alamat</label>
-                        <input type="text" id="alamat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="alamat">
+                        <input type="text" id="alamat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="alamat" required>
                     </div>
+
+                    <div class="mb-4 w-full">
+                        <label class="block text-sm font-medium text-gray-700" for="jam_operasional">Jam Operasional</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="time" name="jam_buka" id="jam_buka" class="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            <span>-</span>
+                            <input type="time" name="jam_tutup" id="jam_tutup" class="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                    </div>
+
+
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700" for="pin">Pin</label>
-                        <input type="text" id="pin" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="pin">
+                        <label class="block text-sm font-medium text-gray-700" for="pin">Pin <label class="font-thin text-gray-500">(Min 4)</label>
+                        <input type="text" id="pin" maxlength="4" pattern="[0-9]*" oninput="this.value=this.value.replace(/[^0-9]/g,'');" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="pin" required>
                     </div>
 
                     <!-- Button Container -->
                     <div class="w-full flex justify-end">
                         <div>
-                            <a href="#" class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">
+                            <a href="{{ route('outlets.index') }}" class="text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">
                                 Batal
                             </a>
-                            <button type="submit" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                            <button id="tambah" type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                                 Tambah
                             </button>
                         </div>
@@ -134,8 +145,80 @@
         </div>
     </div>
 
+    {{-- SWEETALERT --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- JavaScript for Image Preview -->
     <script>
+        @if ($errors->any())
+            let errorMessages = '';
+            @if ($errors->has('email'))
+                errorMessages += '{{ addslashes($errors->first('email')) }}\n'; // Specific email error
+            @endif
+            @if ($errors->has('error'))
+                errorMessages += '{{ addslashes($errors->first('error')) }}\n'; 
+            @endif
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: "error",
+                title: "Registration gagal!",
+                text: errorMessages // Display all error messages here
+            });
+        @endif
+
+        document.getElementById('tambah').addEventListener('click', function (event) {
+            const emailInput = document.getElementById('email').value;
+            const pinInput = document.getElementById('pin').value;
+             const fotoInput = document.getElementById('dropzone-file'); 
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            // Validasi email
+            if (!emailPattern.test(emailInput)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Email tidak valid!',
+                    text: 'Mohon masukkan email yang valid.',
+                    confirmButtonColor: '#3085d6',
+                });
+                return; // Stop form submission
+            }
+
+            // Validasi PIN (minimum 4 digits)
+            if (pinInput.length < 4) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Pin Kurang!',
+                    text: 'Mohon masukkan PIN yang terdiri dari minimal 4 angka.',
+                    confirmButtonColor: '#3085d6',
+                });
+                return; // Stop form submission
+            }
+
+            if (fotoInput.files.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Foto kosong!',
+                    text: 'Mohon masukkan foto outlet anda!',
+                    confirmButtonColor: '#3085d6',
+                });
+                return;
+            }
+
+            document.getElementById('outlet-form').submit();
+            
+        });
+
         var mediaStream = null; // Store the media stream globally
 
         function previewImage(event) {

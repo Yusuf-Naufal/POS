@@ -50,6 +50,26 @@
 {{-- SWEETALERT --}}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<script>
+    @if (session('success'))
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil!!',
+            text: '{{ session('success') }}',
+            showConfirmButton: false,
+            width: 600,
+            timer: 3000,
+            position: 'top-end',
+            toast: true,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        });
+    @endif
+</script>
+
 
 
 </body>

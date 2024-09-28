@@ -62,7 +62,7 @@
                         </li>
                         <li class="flex justify-between">
                             <span class="font-medium text-gray-700 dark:text-gray-300">Status Pengajuan:</span>
-                            <span class="inline-block px-3 py-1 text-xs font-semibold text-red-800 bg-red-200 rounded-lg">
+                            <span class="inline-block px-3 py-1 text-xs font-semibold text-yellow-800 bg-yellow-200 rounded-lg">
                                 {{ $pengajuan->status }}
                             </span>
                         </li>

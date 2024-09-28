@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Produk;
+use App\Models\Detail_Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -25,6 +27,10 @@ class LaporanController extends Controller
             ->groupBy('produks.id', 'produks.nama_produk', 'kategori')
             ->orderBy('total_qty', 'desc')
             ->get();
+
+        $produk = Produk::where('id_outlet',$outlet->id)
+        ->orderBy('nama_produk', 'asc')
+        ->get();
 
         // Separate products into food and drink
         $foodProducts = $topProducts->filter(function ($product) {
@@ -58,7 +64,63 @@ class LaporanController extends Controller
             'drinkProducts' => $drinkProducts,
             'earnings' => $earnings,
             'profit' => $profit,
+            'produk' => $produk
         ]);
+    }
+
+    public function getProductStats(Request $request)
+    {
+        $productId = $request->input('product');
+        $period = $request->input('period');
+
+        // Define start and end dates based on the selected period
+        switch ($period) {
+            case 'minggu':
+                $startDate = now()->startOfWeek();
+                $endDate = now()->endOfWeek();
+                break;
+            case 'bulan':
+                $startDate = now()->startOfMonth();
+                $endDate = now()->endOfMonth();
+                break;
+            case 'hari': // For today
+                $startDate = now()->startOfDay();
+                $endDate = now()->endOfDay();
+                break;
+            default: // Fallback if no valid period
+                $startDate = now()->startOfDay();
+                $endDate = now()->endOfDay();
+                break;
+        }
+
+        // Generate all dates in the range
+        $dateRange = [];
+        $date = $startDate->copy();
+        while ($date->lte($endDate)) {
+            $dateRange[] = $date->format('Y-m-d');
+            $date->addDay();
+        }
+
+        // Group by date and calculate total quantity sold
+        $data = Detail_Transaksi::join('transaksi', 'detail_transaksi.id_transaksi', '=', 'transaksi.id')
+            ->where('detail_transaksi.id_produk', $productId)
+            ->whereBetween('transaksi.tanggal_transaksi', [$startDate, $endDate])
+            ->selectRaw('DATE(transaksi.tanggal_transaksi) as date, SUM(detail_transaksi.qty) as total_qty')
+            ->groupBy('date')
+            ->get()
+            ->keyBy('date'); // Use date as key for easy access
+
+        // Prepare final data with all dates, filling missing dates with zero
+        $result = [];
+        foreach ($dateRange as $date) {
+            $totalQty = $data->has($date) ? $data->get($date)->total_qty : 0; // Default to 0 if no data
+            $result[] = [
+                'date' => $date,
+                'total_qty' => $totalQty
+            ];
+        }
+
+        return response()->json($result);
     }
 
     public function getStatistics(Request $request)

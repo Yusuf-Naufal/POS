@@ -1,5 +1,5 @@
 <x-master-layout>
-    <div class="w-full p-6">
+    <div class="w-full p-2">
         <h1 class="text-2xl font-bold mb-4">Tambah Produk</h1>
 
         <form id="outlet-form" action="{{ route('master.produk.store') }}" method="POST" enctype="multipart/form-data">
@@ -7,7 +7,7 @@
             <!-- Card Container -->
             <div class="bg-white h-auto w-full shadow-md rounded-lg p-6">
                 <div class="flex flex-wrap gap-4">
-                    <div class="flex w-full flex-col lg:flex-row gap-4">
+                    <div class="flex w-full items-center flex-col lg:flex-row gap-4">
                         <div>
                             <!-- Upload Image Section -->
                             <div class="flex items-center justify-center w-64 h-64">
@@ -123,8 +123,11 @@
                     
                     <!-- Checkbox untuk "Tersedia di POS" -->
                     <label class="flex items-center me-5 cursor-pointer my-4">
-                        <input type="hidden" id="status" name="status" value="Habis">
-                        <input type="checkbox" id="pos-toggle" class="sr-only peer" name="status-checkbox" />
+                        <input type="hidden" id="status" name="status">
+                        <!-- Checkbox for the status toggle -->
+                        <input type="checkbox" id="pos-toggle" class="sr-only peer" name="status-checkbox"
+                            onclick="document.getElementById('status').value = this.checked ? 'Aktif' : 'Habis'">
+
                         <div class="relative w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-700 peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
                         <label for="pos-toggle" class="ms-2 text-xl font-semibold text-gray-900 dark:text-gray-300">Tersedia di POS</label>
                     </label>
@@ -428,19 +431,19 @@
             return new File([u8arr], filename, { type: mime });
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const posToggle = document.getElementById('pos-toggle');
-            const statusInput = document.getElementById('status');
+        // document.addEventListener('DOMContentLoaded', function() {
+        //     const posToggle = document.getElementById('pos-toggle');
+        //     const statusInput = document.getElementById('status');
             
-            // Update the hidden status input based on the checkbox
-            posToggle.addEventListener('change', function() {
-                if (this.checked) {
-                    statusInput.value = 'Aktif';
-                } else {
-                    statusInput.value = 'Habis';
-                }
-            });
-        });
+        //     // Update the hidden status input based on the checkbox
+        //     posToggle.addEventListener('change', function() {
+        //         if (this.checked) {
+        //             statusInput.value = 'Aktif';
+        //         } else {
+        //             statusInput.value = 'Habis';
+        //         }
+        //     });
+        // });
 
     </script>
 </x-master-layout>

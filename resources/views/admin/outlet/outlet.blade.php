@@ -1,6 +1,6 @@
 <x-admin-layout>
     <div class="w-full">
-        <div class="flex justify-between mt-7">
+        <div class="flex justify-between">
             <h1 class="text-3xl font-bold">Outlet</h1>
         </div>
 

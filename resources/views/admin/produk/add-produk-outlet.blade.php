@@ -7,7 +7,7 @@
             <!-- Card Container -->
             <div class="bg-white h-auto w-full shadow-md rounded-lg p-6">
                 <div class="flex flex-wrap gap-4">
-                    <div class="flex w-full gap-4">
+                    <div class="flex w-full gap-4 flex-col lg:flex-row items-center">
                         <div>
                             <!-- Upload Image Section -->
                             <div class="flex items-center justify-center w-64 h-64">
@@ -57,8 +57,8 @@
                                 </div>
                             </div>
 
-                            <div class="flex gap-4">
-                                <div class="w-full md:w-1/3 mb-4">
+                            <div class="flex gap-4 flex-col lg:flex-row">
+                                <div class="w-full md:w-1/3">
                                     <label for="id_kategori" class="block text-sm font-medium text-gray-700">Kategori</label>
                                     <div class="relative mt-1">
                                         <select id="id_kategori" name="id_kategori" class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm appearance-none">
@@ -74,7 +74,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="w-full md:w-1/3 mb-4">
+                                <div class="w-full md:w-1/3">
                                     <label class="block text-sm font-medium text-gray-700" for="id_unit">Unit</label>
                                     <div class="relative mt-1">
                                         <select id="id_unit" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="id_unit">
@@ -96,10 +96,10 @@
                 </div>
             </div>
 
-            <div class="bg-white h-auto w-full shadow-md rounded-lg p-6 flex mt-4 ">
-                <div class="w-1/2">
+            <div class="bg-white h-auto w-full shadow-md rounded-lg p-6 flex mt-4 flex-col lg:flex-row">
+                <div class="w-full md:w-1/2">
                     <h1 class="text-2xl font-semibold">Informasi Produk</h1>
-                    <div class="flex w-full pr-7 gap-3 mt-4">
+                    <div class="flex w-full pr-7 gap-3 mt-4 flex-col lg:flex-row">
                         <div class="w-full md:w-1/2 mb-4">
                             <label class="block text-sm font-medium text-gray-700" for="stok_awal">Stok awal</label>
                             <input type="text" id="stok_awal" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="stok_awal">
@@ -118,7 +118,7 @@
                         <input type="text" id="harga_modal" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="harga_modal">
                     </div>
                 </div>
-                <div class="w-1/2">
+                <div class="w-full md:w-1/2">
                     <h1 class="text-2xl font-semibold">Informasi POS</h1>
                     
                     <!-- Checkbox untuk "Tersedia di POS" -->

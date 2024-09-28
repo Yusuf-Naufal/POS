@@ -8,6 +8,7 @@ use App\Models\Outlet;
 use App\Models\Produk;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -28,36 +29,89 @@ class AuthController extends Controller
         ]);
 
         if ($validation->fails()) {
-            return redirect()->back()->withErrors($validation->errors());
+            return redirect()->back()->withErrors($validation->errors())->withInput();
         }
 
-        // Cek kredensial login
-        if (auth()->attempt($request->only('email', 'password'))) {
-            // Ambil pengguna yang sedang login
-            $user = auth()->user();
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+            // Cek kredensial login
+            if (auth()->attempt($request->only('email', 'password'))) {
+                // Ambil pengguna yang sedang login
+                $user = auth()->user();
 
-            // Arahkan pengguna berdasarkan role mereka
-            switch ($user->role) {
-                case 'Master':
-                    if (auth()->user()->id_outlet) {
-                        // Jika id_outlet ada, arahkan ke dashboard
-                        return redirect()->route('master.dashboard')->withCookie(cookie()->forever('everLogin', true));
-                    } else {
-                        // Jika id_outlet null, arahkan ke halaman registrasi outlet
-                        return redirect()->route('master.outlet.register')->withCookie(cookie()->forever('everLogin', true));
-                    }
-                case 'Admin':
-                    return redirect()->route('dashboard.admin')->withCookie(cookie()->forever('everLogin', true));
-                default:
-                    return redirect()->route('users.menu')->withCookie(cookie()->forever('everLogin', true));
+                // Arahkan pengguna berdasarkan role mereka
+                switch ($user->role) {
+                    case 'Master':
+                        if (auth()->user()->id_outlet) {
+                            // If login is successful, send a success flash message
+                            return redirect()->route('master.dashboard')
+                                ->with('success', 'Anda Berhasil Login!!Selamat datang, ' . $user->nama)
+                                ->withCookie(cookie()->forever('everLogin', true));
+                        } else {
+                            return redirect()->route('master.outlet.register')
+                                ->with('success', 'Anda Berhasil Login, Silakan registrasi outlet')
+                                ->withCookie(cookie()->forever('everLogin', true));
+                        }
+                    case 'Admin':
+                        return redirect()->route('dashboard.admin')
+                            ->with('success', 'Haloo Admin!!Selamat datang, ' . $user->nama)
+                            ->withCookie(cookie()->forever('everLogin', true));
+                    default:
+                        return redirect()->route('users.menu')
+                            ->with('success', 'Anda Berhasil Login!!Selamat datang, ' . $user->nama)
+                            ->withCookie(cookie()->forever('everLogin', true));
+                }
+            } else {
+                // Email benar tapi password salah
+                return redirect()->back()->withErrors([
+                    'password' => 'Password Anda Salah!!',
+                ])->withInput();
             }
         }
 
-        // Jika login gagal
+        // Jika login gagal dan email tidak ada di sistem
         return redirect()->back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
+            'email' => 'Email Tidak Terdaftar!!',
+        ])->withInput();
     }
+
+    public function checkEmail(Request $request)
+    {
+        try {
+            $request->validate([
+                'email' => 'required|email',
+            ]);
+
+            $exists = User::where('email', $request->email)->exists();
+            Log::info($request->email);
+
+            return response()->json([
+                'exists' => $exists,
+                'message' => $exists ? 'Email sudah ada!' : 'Email belum terdaftar!'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error checking email: ' . $e->getMessage());
+            return response()->json(['error' => 'Gagal memeriksa email.'], 500);
+        }
+    }
+
+    public function verifyDateOfBirth(Request $request)
+    {
+        // Validate that the 'date' field is required and is a valid date
+        $request->validate([
+            'date' => 'required|date|date_format:Y-m-d', // Ensure the format is YYYY-MM-DD
+        ]);
+
+        // Get the authenticated user
+        $user = auth()->user();
+
+        // Check if the date from the request matches the user's 'tanggal_lahir'
+        $isValid = $user->tanggal_lahir === $request->date;
+
+        // Return the validation result as a JSON response
+        return response()->json(['isValid' => $isValid]);
+    }
+
 
     public function registerView()
     {
@@ -68,20 +122,35 @@ class AuthController extends Controller
     {
         $validation = Validator::make($request->all(), [
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8',
+            'password' => 'required|min:6',
             'nama' => 'required|max:255',
             'username' => 'required|max:255|unique:users,username',
-            'no_telp' => 'required|max:15',
+            'no_telp' => 'required|max:13',
             'alamat' => 'required|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validate image
+            'image' => 'nullable|image|mimes:jpeg,png,jpg', 
         ]);
 
         if ($validation->fails()) {
-            return $validation;
+            // Check if the email already exists
+            if ($request->filled('email') && User::where('email', $request->email)->exists()) {
+                return redirect()->back()->withErrors([
+                    'email' => 'Email sudah ada, silakan gunakan email lain.'
+                ])->withInput();
+            }
+
+            // General validation error message
+            return redirect()->back()->withErrors([
+                'error' => 'Registrasi error, coba ulang lagi.'
+            ])->withInput();
         }
 
-        $foto = time() . '.' . $request->foto->extension();
-        $request->foto->storeAs('public/assets/profile', $foto);
+        // Handle the image upload if exists
+        if ($request->hasFile('image')) {
+            $foto = time() . '.' . $request->image->extension();
+            $request->image->storeAs('public/assets/profile', $foto);
+        } else {
+            $foto = null; // Handle cases where no image is uploaded
+        }
 
         $user = new User();
         $user->nama = $request->nama;
@@ -95,12 +164,12 @@ class AuthController extends Controller
         $user->status = 'Pending';
         $user->alamat = $request->alamat;
         $user->foto = 'profile/' . $foto;
-        
+
         $user->save();
 
         return redirect()->route('loginForm')->with('success', 'Akun berhasil dibuat');
-        
     }
+
 
     public function logout()
     {
@@ -108,6 +177,29 @@ class AuthController extends Controller
 
         return redirect()->route('loginForm');
     }
+
+    public function editProfile($id)
+    {
+        $user = User::findOrFail($id); 
+
+        if (auth()->user()->id !== $user->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        return view('pemilik.user.edit-profile', compact('user'));
+    }
+
+    public function editAdmin($id)
+    {
+        $user = User::findOrFail($id);
+
+        if (auth()->user()->id !== $user->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        return view('admin.edit-profile', compact('user'));
+    }
+
 
     // =================================================== ADMIN ================================================== //
 
@@ -216,7 +308,7 @@ class AuthController extends Controller
         // Validate the input
         $validation = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
-            'no_telp' => 'required|string|max:15',
+            'no_telp' => 'required|string',
             'username' => 'required|string|max:255|unique:users,username',
             'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:6',
@@ -263,7 +355,7 @@ class AuthController extends Controller
         // Validasi permintaan
         $validation = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
-            'no_telp' => 'required|string|max:20',
+            'no_telp' => 'required|string',
             'username' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'jenis_kelamin' => 'required|string',
@@ -275,7 +367,17 @@ class AuthController extends Controller
         ]);
 
         if ($validation->fails()) {
-            return back()->withErrors($validation)->withInput();
+            // Check if the email already exists
+            if ($request->filled('email') && User::where('email', $request->email)->exists()) {
+                return redirect()->back()->withErrors([
+                    'email' => 'Email sudah ada, silakan gunakan email lain.'
+                ])->withInput();
+            }
+
+            // General validation error message
+            return redirect()->back()->withErrors([
+                'error' => 'Update error, coba ulang lagi.'
+            ])->withInput();
         }
 
         $user = User::findOrFail($id);
@@ -306,9 +408,9 @@ class AuthController extends Controller
         $user->save();
 
         if($request->role === 'Master'){
-            return redirect()->route('admin.users.index')->with('success', 'User updated successfully!');
+            return redirect()->route('admin.users.index')->with('success', 'User Berhasil Diupdate');
         }else{
-            return redirect()->route('admin.karyawan.index')->with('success', 'User updated successfully!');
+            return redirect()->route('admin.karyawan.index')->with('success', 'User Berhasil Diupdate');
         }
 
         // return $request;
@@ -352,13 +454,14 @@ class AuthController extends Controller
         // Validate the input
         $validation = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
-            'no_telp' => 'required|string|max:15',
+            'no_telp' => 'required|string',
             'username' => 'required|string|max:255|unique:users,username',
             'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:6',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'tanggal_lahir' => 'required|date',
             'alamat' => 'required|string|max:255',
+            'status' =>'nullable',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg',
         ]);
 
@@ -399,9 +502,9 @@ class AuthController extends Controller
 
         // Redirect back with a success message
         if($login === 'Master'){
-            return redirect()->route('master.users.index')->with('success', 'User created successfully.');
+            return redirect()->route('master.users.index')->with('success', 'User Berhasil Dibuat!');
         }else{
-            return redirect()->route('admin.karyawan.index')->with('success', 'User created successfully.');
+            return redirect()->route('admin.karyawan.index')->with('success', 'User Berhasil Dibuat!');
         }
     }
 
@@ -424,7 +527,7 @@ class AuthController extends Controller
         // Validasi permintaan
         $validation = Validator::make($request->all(), [
             'nama' => 'required|string|max:255',
-            'no_telp' => 'required|string|max:20',
+            'no_telp' => 'required|string',
             'username' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'jenis_kelamin' => 'required|string',
@@ -436,7 +539,17 @@ class AuthController extends Controller
         ]);
 
         if ($validation->fails()) {
-            return back()->withErrors($validation)->withInput();
+            // Check if the email already exists
+            if ($request->filled('email') && User::where('email', $request->email)->exists()) {
+                return redirect()->back()->withErrors([
+                    'email' => 'Email sudah ada, silakan gunakan email lain.'
+                ])->withInput();
+            }
+
+            // General validation error message
+            return redirect()->back()->withErrors([
+                'error' => 'Update error, coba ulang lagi.'
+            ])->withInput();
         }
 
         $user = User::findOrFail($id);
@@ -467,9 +580,9 @@ class AuthController extends Controller
         $user->id_outlet = $request->id_outlet;
         $user->save();
 
-        return redirect()->route('master.users.index')->with('success', 'User updated successfully!');
+        return redirect()->route('master.users.index')->with('success', 'Karyawan Berhasil Diupdate!');
 
-        // return $request;
+         // return $request;
     }
 
     public function deactivateKaryawan($id)
@@ -514,13 +627,83 @@ class AuthController extends Controller
         // Determine where to redirect based on a condition (e.g., role or some other criteria)
         if (auth()->user()->role === 'Admin') {
             if($user->role == 'Master'){
-                return redirect()->route('admin.users.index')->with('success', 'User deleted successfully!');
+                return redirect()->route('admin.users.index')->with('success', 'User Berhasil Dihapus!');
             }else{
-                return redirect()->route('admin.karyawan.index')->with('success', 'User deleted successfully!');
+                return redirect()->route('admin.karyawan.index')->with('success', 'User Berhasil Dihapus!');
             }
         } else {
-            return redirect()->route('master.users.index')->with('success', 'User deleted successfully!');
+            return redirect()->route('master.users.index')->with('success', 'User Berhasil Dihapus!');
         }
+    }
+
+    public function updateProfile(Request $request, $id)
+    {
+        // Validasi permintaan
+        $validation = Validator::make($request->all(), [
+            'nama' => 'required|string|max:255',
+            'no_telp' => 'required|string',
+            'username' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'jenis_kelamin' => 'required|string',
+            'tanggal_lahir' => 'required|date',
+            'alamat' => 'required|string|max:255',
+            'status' => 'nullable|string',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg',
+            'id_outlet' => 'nullable|exists:outlet,id',
+        ]);
+
+        if ($validation->fails()) {
+            // Check if the email already exists
+            if ($request->filled('email') && User::where('email', $request->email)->exists()) {
+                return redirect()->back()->withErrors([
+                    'email' => 'Email sudah ada, silakan gunakan email lain.'
+                ])->withInput();
+            }
+
+            // General validation error message
+            return redirect()->back()->withErrors([
+                'error' => 'Update error, coba ulang lagi.'
+            ])->withInput();
+        }
+
+        $user = User::findOrFail($id);
+
+        // Jika ada foto baru yang diunggah
+        if ($request->hasFile('foto')) {
+            // Hapus foto lama jika ada
+            if ($user->foto && Storage::exists('public/assets/' . $user->foto)) {
+                Storage::delete('public/assets/' . $user->foto);
+            }
+
+            // Simpan foto baru
+            $foto = time() . '.' . $request->foto->extension();
+            $request->foto->storeAs('public/assets/profile', $foto);
+            $user->foto = 'profile/' . $foto;
+        }
+
+
+
+        // Perbarui atribut user
+        $user->nama = $request->nama;
+        $user->no_telp = $request->no_telp;
+        $user->username = $request->username;
+        $user->jenis_kelamin = $request->jenis_kelamin;
+        $user->alamat = $request->alamat;
+        $user->tanggal_lahir = $request->tanggal_lahir;
+        $user->status = $request->status;
+        $user->id_outlet = $request->id_outlet;
+        $user->save();
+
+        if(auth()->user()->role === 'Admin'){
+            return redirect()->route('dashboard.admin')->with('success', 'Profile Berhasil di Update');
+        }elseif(auth()->user()->role === 'Master'){
+            return redirect()->route('master.dashboard')->with('success', 'Profile Berhasil di Update');
+        }else{
+            return redirect()->route('users.menu')->with('success', 'Profile Berhasil di Update');
+        }
+        
+
+        // return $request;
     }
 
 

@@ -32,8 +32,18 @@ class TransaksiController extends Controller
     public function show($resi)
     {
         $transaksi = Transaksi::where('resi', $resi)->firstOrFail();
+
         // Retrieve the transaction details, such as detail_transaksi
-        $detailTransaksi = Detail_Transaksi::where('id_transaksi', $transaksi->id)->get();
+        $detailTransaksi = Detail_Transaksi::with('produk')
+            ->join('produks', 'detail_transaksi.id_produk', '=', 'produks.id')
+            ->where('detail_transaksi.id_transaksi', $transaksi->id)
+            ->orderBy('produks.nama_produk', 'asc') 
+            ->select('detail_transaksi.*') 
+            ->get();
+
+
+
+        // $detailTransaksi = Detail_Transaksi::where('id_transaksi', $transaksi->id)->get();
         
         if (auth()->user()->role === 'Admin') {
             return view('admin.transaksi.detail-transaksi', compact('transaksi', 'detailTransaksi'));
@@ -51,37 +61,11 @@ class TransaksiController extends Controller
         $transaksi->delete();
 
         if (auth()->user()->role === 'Admin') {
-            return redirect()->route('admin.transaksi.index')->with('success', 'Transaction deleted successfully!');
+            return redirect()->route('admin.transaksi.index')->with('success', 'Transaction Berhasil Dihapus!');
         }else {
             // Redirect with a success message
-            return redirect()->route('master.transaksi.index')->with('success', 'Transaction deleted successfully!');
+            return redirect()->route('master.transaksi.index')->with('success', 'Transaction Berhasil Dihapus!');
         }
-    }
-
-    public function edit($resi)
-    {
-        $OutletId = auth()->user()->id_outlet;
-
-        // Fetch the transaction and its details
-        $transaksi = Transaksi::with('details.produk')->where('resi', $resi)->where('id_outlet', $OutletId)->firstOrFail();
-
-        // Ambil ID produk yang sudah ada di dalam transaksi
-        $produkIdsInTransaksi = $transaksi->details->pluck('produk.id');
-
-        // Ambil semua produk yang belum ada dalam transaksi
-        $produksYangBelumAda = Produk::where('id_outlet', $OutletId)
-                        ->whereNotIn('id', $produkIdsInTransaksi)
-                        ->get();
-
-        // Ambil semua produk tanpa filter
-        $semuaProduks = Produk::where('id_outlet', $OutletId)->get();
-
-        return view('pemilik.transaksi.edit-transaksi', [
-            'transaksi' => $transaksi,
-            'detailTransaksi' => $transaksi->details, 
-            'semuaProduks' => $semuaProduks,
-            'produksYangBelumAda' => $produksYangBelumAda,
-        ]);
     }
 
     public function update(Request $request, $id)
@@ -92,6 +76,7 @@ class TransaksiController extends Controller
                 'produk.*.id' => 'required|exists:produks,id',
                 'produk.*.qty' => 'required|integer|min:1',
                 'tanggal_transaksi' => 'required|date',
+                'catatan' => 'nullable|string'
             ]);
 
             DB::transaction(function () use ($validatedData, $id) {
@@ -120,20 +105,47 @@ class TransaksiController extends Controller
                     ->sum(DB::raw('qty * harga_jual'));
 
                 $transaksi = Transaksi::findOrFail($id);
-                $transaksi->catatan;
+                $transaksi->catatan = $validatedData['catatan']; 
                 $transaksi->tanggal_transaksi = $validatedData['tanggal_transaksi'];
                 $transaksi->total_qty = $totalQty;
                 $transaksi->total_belanja = $totalBelanja;
                 $transaksi->save();
             });
 
-            return response()->json(['message' => 'Transaksi updated successfully']);
+            return response()->json(['message' => 'Transaksi Berhasil Diupdate!!']);
         } catch (\Exception $e) {
             Log::error('Error updating transaksi for ID ' . $id . ': ' . $e->getMessage());
             return response()->json(['message' => 'Error updating transaksi'], 500);
         }
     }
-    
+
+
+    public function editAdmin($resi)
+    {
+        // 1. Fetch the transaction and its details based on the provided 'resi'
+        $transaksi = Transaksi::with('details.produk')->where('resi', $resi)->firstOrFail();
+        $OutletId = $transaksi->id_outlet;
+
+        // 2. Get the IDs of products already in the transaction
+        $produkIdsInTransaksi = $transaksi->details->pluck('produk.id');
+
+        // 3. Fetch all products that are not part of the transaction for the specific outlet
+        $produksYangBelumAda = Produk::where('id_outlet', $OutletId)
+            ->whereNotIn('id', $produkIdsInTransaksi)
+            ->get();
+
+        // 4. Fetch all products for the specific outlet, without filtering
+        $semuaProduks = Produk::where('id_outlet', $OutletId)->get();
+
+        // Return view with all the data
+        return view('admin.transaksi.edit-transaksi', [
+            'transaksi' => $transaksi,
+            'detailTransaksi' => $transaksi->details,
+            'semuaProduks' => $semuaProduks,
+            'produksYangBelumAda' => $produksYangBelumAda,
+        ]);
+    }
+
     // ================================= KASIR ================================== //
     public function store(Request $request)
     {
@@ -180,23 +192,36 @@ class TransaksiController extends Controller
             return response()->json(['error' => 'Failed to save transaction'], 500);
         }
     }
-    public function dashboardView()
-    {
-        $user = auth()->user();
 
-        // Dapatkan outlets yang terkait dengan pengguna ini
-        $outlets = $user->outlet;
+    // public function dashboardView()
+    // {
+    //     $user = auth()->user();
+
+    //     // Dapatkan outlets yang terkait dengan pengguna ini
+    //     $outlets = $user->outlet;
 
 
-        // Ambil produk yang terkait dengan outlet
-        $produks = Produk::where('id_outlet', $outlets->id)->get();
+    //     // Ambil produk yang terkait dengan outlet
+    //     $produks = Produk::with('detailTransaksi')  // Assuming 'detailTransaksi' is the relationship name
+    //                 ->leftJoin('detail_transaksi', 'produks.id', '=', 'detail_transaksi.id_produk')
+    //                 ->select('produks.*', DB::raw('COALESCE(SUM(detail_transaksi.qty), 0) as total_sold'))
+    //                 ->where('produks.id_outlet', $outlets->id)
+    //                 ->groupBy('produks.id')
+    //                 ->orderBy('total_sold', 'desc') 
+    //                 ->orderBy('produks.nama_produk', 'asc') 
+    //                 ->get();
 
-        return view('user.dashboard', [
-            'Outlet' => $outlets,
-            'User' => $user,
-            'Produk' => $produks,
-        ]);
-    }
+    //     // Group products by category
+    //     $groupedProduks = $produks->groupBy('id_kategori');
+
+    //     return view('user.dashboard', [
+    //         'Outlet' => $outlets,
+    //         'User' => $user,
+    //         'Produk' => $produks,
+    //         'groupedProduks' => $groupedProduks,
+    //     ]);
+    // }
+
 
     public function menuView()
     {
@@ -330,5 +355,34 @@ class TransaksiController extends Controller
         return view('pemilik.transaksi.transaksi', [
              'Transaksi' => $transaksi,
         ]);
+    }
+
+    public function edit($resi)
+    {
+        $OutletId = auth()->user()->id_outlet;
+
+        // Fetch the transaction and its details
+        $transaksi = Transaksi::with('details.produk')->where('resi', $resi)->where('id_outlet', $OutletId)->firstOrFail();
+
+        // Ambil ID produk yang sudah ada di dalam transaksi
+        $produkIdsInTransaksi = $transaksi->details->pluck('produk.id');
+
+        // Ambil semua produk yang belum ada dalam transaksi
+        $produksYangBelumAda = Produk::where('id_outlet', $OutletId)
+            ->whereNotIn('id', $produkIdsInTransaksi)
+            ->get();
+
+        // Ambil semua produk tanpa filter
+        $semuaProduks = Produk::where('id_outlet', $OutletId)->get();
+
+        
+        
+        return view('pemilik.transaksi.edit-transaksi', [
+            'transaksi' => $transaksi,
+            'detailTransaksi' => $transaksi->details,
+            'semuaProduks' => $semuaProduks,
+            'produksYangBelumAda' => $produksYangBelumAda,
+        ]);
+        
     }
 }

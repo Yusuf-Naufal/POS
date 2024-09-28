@@ -20,14 +20,23 @@ class DashboardController extends Controller
 
 
         // Ambil produk yang terkait dengan outlet
-        $produks = Produk::where('id_outlet', $outlets->id)
-                ->orderBy('nama_produk', 'desc') // Order by the product name in ascending order
-                ->get();
+        $produks = Produk::with('detailTransaksi')  // Assuming 'detailTransaksi' is the relationship name
+                    ->leftJoin('detail_transaksi', 'produks.id', '=', 'detail_transaksi.id_produk')
+                    ->select('produks.*', DB::raw('COALESCE(SUM(detail_transaksi.qty), 0) as total_sold'))
+                    ->where('produks.id_outlet', $outlets->id)
+                    ->groupBy('produks.id')
+                    ->orderBy('total_sold', 'desc') 
+                    ->orderBy('produks.nama_produk', 'asc') 
+                    ->get();
+
+        // Group products by category
+        $groupedProduks = $produks->groupBy('id_kategori');
 
         return view('user.dashboard', [
             'Outlet' => $outlets,
             'User' => $user,
             'Produk' => $produks,
+            'groupedProduks' => $groupedProduks,
         ]);
     }
 

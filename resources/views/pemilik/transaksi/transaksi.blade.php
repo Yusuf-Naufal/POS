@@ -1,6 +1,6 @@
 <x-master-layout>
     <div class="w-full">
-        <div class="flex justify-between mt-7 w-full">
+        <div class="flex justify-between w-full">
             <h1 class="text-3xl font-bold">Riwayat Transaksi</h1> 
         </div>
         <div class="flex justify-between mt-2 gap-2">

@@ -17,17 +17,11 @@ class TimeAccessMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Inisialisasi jam operasional
-        $startHour = '06:00:00';  // Jam mulai operasional
-        $endHour = '20:00:00';   // Jam tutup operasional
-
-        // Ambil jam saat ini
+        // Ambil jam saat ini dalam timezone Asia/Jakarta
         $currentTime = now()->setTimezone('Asia/Jakarta')->toTimeString();
-
 
         // Ambil ID outlet dari request atau route
         $id_outlet = $request->route('id');
-
 
         // Pengecekan jika ID outlet tidak ada di request
         if (!$id_outlet) {
@@ -47,12 +41,17 @@ class TimeAccessMiddleware
             return redirect()->route('error.page')->with('message', 'Outlet sedang tidak aktif');
         }
 
-        // Pengecekan jam operasional
+        // Ambil jam buka dan tutup dari outlet
+        $startHour = $outlet->jam_buka;  // Jam mulai operasional dari database
+        $endHour = $outlet->jam_tutup;   // Jam tutup operasional dari database
+
+        // Pengecekan jam operasional outlet
         if ($currentTime < $startHour || $currentTime >= $endHour) {
-            return redirect()->route('error.page')->with('message', 'Akses tidak diperbolehkan di luar jam operasional');
+            return redirect()->route('error.page')->with('message', 'Akses tidak diperbolehkan di luar jam operasional (' . \Carbon\Carbon::parse($startHour)->format('H:i') . ' - ' . \Carbon\Carbon::parse($endHour)->format('H:i') . ')');
         }
 
         // Jika semua pengecekan lolos, lanjutkan request
         return $next($request);
     }
+
 }

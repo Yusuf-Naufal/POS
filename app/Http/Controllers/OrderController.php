@@ -28,14 +28,24 @@ class OrderController extends Controller
         // Fetch the outlet by ID
         $outlet = Outlet::findOrFail($id);
 
-        // Fetch the products directly associated with the selected outlet
-        $produks = Produk::where('id_outlet', $outlet->id)
-                    ->orderBy('nama_produk', 'asc')
+        // Fetch the products directly associated with the selected outlet and order by sales
+        $produks = Produk::with('detailTransaksi')  // Assuming 'detailTransaksi' is the relationship name
+                    ->leftJoin('detail_transaksi', 'produks.id', '=', 'detail_transaksi.id_produk')
+                    ->select('produks.*', DB::raw('COALESCE(SUM(detail_transaksi.qty), 0) as total_sold'))
+                    ->where('produks.id_outlet', $outlet->id)
+                    ->groupBy('produks.id')
+                    ->orderBy('total_sold', 'desc') 
+                    ->orderBy('produks.nama_produk', 'asc') 
                     ->get();
 
-        // Return the view with the outlet and products
-        return view('pelanggan.order', compact('outlet', 'produks'));
+        // Group products by category
+        $groupedProduks = $produks->groupBy('id_kategori');
+
+        // Return the view with the outlet and grouped products
+        return view('pelanggan.order', compact('outlet', 'groupedProduks'));
     }
+
+
 
     public function store(Request $request)
     {
@@ -267,7 +277,7 @@ class OrderController extends Controller
         $allOrders = Order::where('id_outlet', $outlets->id)
             ->whereIn('status', ['Denied', 'Success'])
             ->whereDate('created_at', now()->toDateString()) // Filter order hanya untuk hari ini
-            ->with(['detailOrders.produk'])
+            ->with(['outlet','detailOrders.produk'])
             ->paginate($perPage);
 
         return view('user.riwayat-order', [

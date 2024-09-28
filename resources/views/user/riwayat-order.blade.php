@@ -8,7 +8,7 @@
             <h1 class="text-3xl font-bold my-4 ml-3">Riwayat Order</h1>
         </div>
 
-        <div class="flex justify-between flex-col lg:flex-row mb-4">
+        <div class="flex justify-between flex-col lg:flex-row mb-4 px-2">
             <div class="flex items-center">
                 <label for="filter" class="mr-2 text-gray-700">Filter:</label>
                 <select name="filter" id="filter" onchange="filterData()" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-fit p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
@@ -204,50 +204,77 @@
 
     <script>
         function openModal(id, outletName, outletAddress, outletPhone, date, resi, customerName, pickupTime, customerTelp, totalQty, subtotal, total, status, notes, orderItems) {
-            // Set modal content
-            document.getElementById('modal-outlet-name').textContent = outletName;
-            document.getElementById('modal-outlet-address').textContent = outletAddress;
-            document.getElementById('modal-outlet-phone').textContent = outletPhone;
-            document.getElementById('modal-date').textContent = `Tanggal: ${date}`;
-            document.getElementById('modal-resi').textContent = `Resi: ${resi}`;
-            document.getElementById('modal-customer-name').textContent = `Pemesan: ${customerName}`;
-            document.getElementById('modal-pickup-time').textContent = `Jam Ambil: ${pickupTime}`;
-            document.getElementById('modal-customer-telp').textContent = `No. Telepon: ${customerTelp}`;
-            document.getElementById('modal-total-qty').textContent = totalQty;
-            document.getElementById('modal-subtotal').textContent = `Rp. ${subtotal}`;
-            document.getElementById('modal-total').textContent = `Rp. ${total}`;
-            document.getElementById('modal-status').textContent = status;
-            document.getElementById('modal-notes').textContent = notes;
+    // Set modal content
+    document.getElementById('modal-outlet-name').textContent = outletName;
+    document.getElementById('modal-outlet-address').textContent = outletAddress;
+    document.getElementById('modal-outlet-phone').textContent = outletPhone;
+    document.getElementById('modal-date').textContent = `Tanggal: ${date}`;
+    document.getElementById('modal-resi').textContent = `Resi: ${resi}`;
+    document.getElementById('modal-customer-name').textContent = `Pemesan: ${customerName}`;
+    document.getElementById('modal-pickup-time').textContent = `Jam Ambil: ${pickupTime}`;
+    document.getElementById('modal-customer-telp').textContent = `No. Telepon: ${customerTelp}`;
+    document.getElementById('modal-total-qty').textContent = totalQty;
+    document.getElementById('modal-subtotal').textContent = `Rp. ${subtotal}`;
+    document.getElementById('modal-total').textContent = `Rp. ${total}`;
 
-            // Populate order items
-            const orderItemsTable = document.getElementById('modal-order-items');
-            orderItemsTable.innerHTML = ''; // Clear existing items
-            orderItems.forEach(item => {
-                const row = document.createElement('tr');
-                row.className = 'border-b border-gray-200';
-                row.innerHTML = `
-                    <td class="py-2">${item.produk.nama_produk}</td>
-                    <td class="py-2">${item.qty}</td>
-                    <td class="py-2 text-right">Rp. ${item.subtotal}</td>
-                `;
-                orderItemsTable.appendChild(row);
-            });
+    // Set status with color coding
+    const statusElement = document.getElementById('modal-status');
+    statusElement.textContent = status; // Set the text content
 
-            // Set the global orderId
-            window.currentOrderId = id;
+    // Reset any previous status color classes
+    statusElement.classList.remove('text-gray-500', 'text-yellow-500', 'text-red-500', 'text-green-500');
 
-            // Show the modal
-            document.getElementById('orderModal').classList.remove('hidden');
-        }
+    // Apply color based on status
+    if (status === 'Pending') {
+        statusElement.classList.add('text-gray-500'); // Grey for Pending
+    } else if (status === 'Process') {
+        statusElement.classList.add('text-yellow-500'); // Yellow for Process
+    } else if (status === 'Denied') {
+        statusElement.classList.add('text-red-500'); // Red for Denied
+    } else if (status === 'Success') {
+        statusElement.classList.add('text-green-500'); // Green for Success
+    }
+
+    document.getElementById('modal-notes').textContent = notes;
+
+    // Populate order items
+    const orderItemsTable = document.getElementById('modal-order-items');
+    orderItemsTable.innerHTML = ''; // Clear existing items
+
+    // Check if orderItems exists and is not null
+    if (orderItems && orderItems.length > 0) {
+        orderItems.forEach(item => {
+            const row = document.createElement('tr');
+            row.className = 'border-b border-gray-200';
+            row.innerHTML = `
+                <td class="py-2">${item.produk.nama_produk}</td>
+                <td class="py-2">${item.qty}</td>
+                <td class="py-2 text-right">Rp. ${item.subtotal.toLocaleString()}</td>
+            `;
+            orderItemsTable.appendChild(row);
+        });
+    } else {
+        const noItemsRow = document.createElement('tr');
+        noItemsRow.className = 'border-b border-gray-200';
+        noItemsRow.innerHTML = `
+            <td colspan="3" class="py-2 text-center text-gray-500">Tidak ada item dalam pesanan ini</td>
+        `;
+        orderItemsTable.appendChild(noItemsRow);
+    }
+
+    // Set the global orderId
+    window.currentOrderId = id;
+
+    // Show the modal
+    document.getElementById('orderModal').classList.remove('hidden');
+}
+
+
 
         function closeModal() {
             document.getElementById('orderModal').classList.add('hidden');
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const finisOrderButton = document.getElementById('finisOrderButton');
-
-        });
 
         function searchTable() {
             // Get the search input value
@@ -317,11 +344,16 @@
             data.forEach(order => {
                 const row = document.createElement('tr');
                 row.className = 'border-b hover:bg-gray-100 cursor-pointer';
+
+                const outletName = order.nama_outlet;
+                const outletAddress = order.alamat_outlet;
+                const outletPhone = order.no_telp_outlet;
+
                 row.onclick = () => openModal(
-                    order.id,
-                    order.outlet.nama_outlet,
-                    order.outlet.alamat,
-                    order.outlet.no_telp,
+                    order.id, // Include order id
+                    outletName,
+                    outletAddress,
+                    outletPhone,
                     order.tanggal,
                     order.resi,
                     order.nama_pemesan,
@@ -349,6 +381,7 @@
                 tbody.appendChild(row);
             });
         }
+
 
         function updatePagination(total, currentPage, lastPage, perPage) {
             const paginationContainer = document.getElementById('pagination-container');
@@ -394,9 +427,6 @@
             }
 
         }
-
-
-
 
         // Fetch and display data for the default filter on page load
         window.onload = function() {

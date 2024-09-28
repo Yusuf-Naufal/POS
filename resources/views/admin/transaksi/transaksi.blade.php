@@ -76,7 +76,7 @@
                         <td class="px-6 py-4 text-right">
                             <div class="relative flex items-center justify-center space-x-2 text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 w-fit">
                                 <!-- Button for 'Ubah' -->
-                                <a href="" type="button" 
+                                <a href="{{ route('admin.transaksi.edit', $transaksi->resi) }}" type="button" 
                                     class="focus:outline-none">
                                     Ubah
                                 </a>

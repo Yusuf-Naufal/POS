@@ -34,35 +34,40 @@
 
                 <!-- Scrollable Products Container -->
                 <div class="flex-1 overflow-y-auto p-4 max-h-[calc(100vh-13rem)] border-b border-gray-200">
-                    <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                        @foreach($Produk as $produk)
-                        <button class="product-item relative flex flex-col bg-white rounded-lg shadow-md overflow-hidden
-                            {{ $produk->status === 'Habis' ? 'bg-gray-300 cursor-not-allowed' : 'hover:bg-gray-100' }}"
-                            data-name="{{ $produk->nama_produk }}"
-                            data-sku="{{ $produk->sku }}"
-                            data-id="{{ $produk->id }}"
-                            data-status="{{ $produk->status }}"
-                            onclick="{{ $produk->status !== 'Habis' ? 'addToOrder(\'' . $produk->id . '\', \'' . $produk->nama_produk . '\', \'' . number_format($produk->harga_jual, 0, ',', '.') . '\')' : '' }}">
-                            
-                            <div class="relative w-full h-32 bg-white items-center flex justify-center">
-                                <img src="{{ asset('storage/assets/' . $produk->foto ) }}" alt="{{ $produk->nama_produk }}" class="w-full h-full object-contain">
+                    @foreach($groupedProduks as $kategoriId => $produkGroup)
+                        <h2 class="text-xl font-semibold text-purple-800 mt-4">
+                            {{ $produkGroup->first()->kategoris->nama_kategori ?? 'Uncategorized' }} <!-- Menampilkan nama kategori -->
+                        </h2>
+                        <div id="product-grid-{{ $kategoriId }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-2">
+                            @foreach($produkGroup as $produk)
+                            <button class="product-item relative flex flex-col bg-white rounded-lg shadow-md overflow-hidden
+                                {{ $produk->status === 'Habis' ? 'bg-gray-300 cursor-not-allowed' : 'hover:bg-gray-100' }}"
+                                data-name="{{ $produk->nama_produk }}"
+                                data-sku="{{ $produk->sku }}"
+                                data-id="{{ $produk->id }}"
+                                data-status="{{ $produk->status }}"
+                                onclick="{{ $produk->status !== 'Habis' ? 'addToOrder(\'' . $produk->id . '\', \'' . $produk->nama_produk . '\', \'' . number_format($produk->harga_jual, 0, ',', '.') . '\')' : '' }}">
                                 
-                                @if($produk->status === 'Habis')
-                                <!-- Watermark for "Habis" -->
-                                <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                                    <span class="text-white text-lg font-bold">Habis</span>
+                                <div class="relative w-full h-32 bg-white items-center flex justify-center">
+                                    <img src="{{ asset('storage/assets/' . $produk->foto ) }}" alt="{{ $produk->nama_produk }}" class="w-full h-full object-contain">
+                                    
+                                    @if($produk->status === 'Habis')
+                                    <!-- Watermark for "Habis" -->
+                                    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                                        <span class="text-white text-lg font-bold">Habis</span>
+                                    </div>
+                                    @endif
                                 </div>
-                                @endif
-                            </div>
 
-                            <div class="p-4 flex flex-col items-start justify-start">
-                                <h2 class="text-sm font-light text-gray-800 mb-2">{{ $produk->nama_produk }}</h2>
-                                <p class="text-gray-600 text-sm font-semibold">{{ number_format($produk->harga_jual, 0, ',', '.') }}</p>
-                                <p class="hidden">{{ $produk->sku }}</p>
-                            </div>
-                        </button>
-                        @endforeach
-                    </div>
+                                <div class="p-4 flex flex-col items-start justify-start">
+                                    <h2 class="text-sm font-light text-gray-800 mb-2">{{ $produk->nama_produk }}</h2>
+                                    <p class="text-gray-600 text-sm font-semibold">{{ number_format($produk->harga_jual, 0, ',', '.') }}</p>
+                                    <p class="hidden">{{ $produk->sku }}</p>
+                                </div>
+                            </button>
+                            @endforeach
+                        </div>
+                    @endforeach
                 </div>
             </div>
 

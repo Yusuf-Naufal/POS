@@ -70,6 +70,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/master', [DashboardController::class, 'MasterDashboard'])->name('master.dashboard');
         Route::get('/laporan-outlet', [LaporanController::class, 'LaporanMaster'])->name('master.laporan');
         Route::get('/get-statistics', [DashboardController::class, 'getStatistics']);
+        Route::get('/get-product-stats', [LaporanController::class, 'getProductStats']);
 
         // MANAJEMEN LAPORAN
         Route::get('/laporan/earnings', [LaporanController::class, 'fetchEarnings']);
@@ -79,9 +80,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/karyawan/create', [AuthController::class, 'createKaryawan'])->name('master.users.create');
         Route::get('/karyawan/{id}/edit', [AuthController::class, 'editKaryawan'])->name('master.users.edit');
         Route::put('/karyawan/{id}', [AuthController::class, 'updateKaryawan'])->name('master.users.update');
-        Route::patch('/karyawan/{id}/deactivate', [AuthController::class, 'deactivateKaryawan'])->name('master.users.deactivate'); 
+        Route::patch('/karyawan/{id}/deactivate', [AuthController::class, 'deactivateKaryawan'])->name('master.users.deactivate');
         Route::patch('/karyawan/{id}/activate', [AuthController::class, 'activateKaryawan'])->name('master.users.activate');
-        
+
 
         // MANAJEMEN TRANSAKSI
         Route::get('/outlet-transaksi', [TransaksiController::class, 'indexOutlet'])->name('master.transaksi.index');
@@ -93,7 +94,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/outlet-produk', [ProdukController::class, 'storeMaster'])->name('master.produk.store');
         Route::get('/outlet-produk/{id}/edit', [ProdukController::class, 'editMaster'])->name('master.produk.edit');
         Route::put('/outlet-produk/{id}', [ProdukController::class, 'updateMaster'])->name('master.produk.update');
-        Route::patch('/outlet-produk/{id}/deactivate', [ProdukController::class, 'deactivateMaster'])->name('master.deactivate'); 
+        Route::patch('/outlet-produk/{id}/deactivate', [ProdukController::class, 'deactivateMaster'])->name('master.deactivate');
         Route::patch('/outlet-produk/{id}/activate', [ProdukController::class, 'activateMaster'])->name('master.activate');
 
         // MANAJEMEN OUTLET 
@@ -113,7 +114,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/users-pemilik', [AuthController::class, 'indexAdminPemilik'])->name('admin.users.index');
         Route::get('/users-pemilik/create', [AuthController::class, 'createPemilik'])->name('admin.users.create');
         Route::post('/users-pemilik', [AuthController::class, 'storePemilik'])->name('admin.users.store');
-        Route::patch('/users-pemilik/{id}/deactivate', [AuthController::class, 'deactivateUser'])->name('admin.users.deactivate'); 
+        Route::patch('/users-pemilik/{id}/deactivate', [AuthController::class, 'deactivateUser'])->name('admin.users.deactivate');
         Route::patch('/users-pemilik/{id}/activate', [AuthController::class, 'activateUser'])->name('admin.users.activate');
         Route::get('/users/{id}/edit', [AuthController::class, 'edit'])->name('admin.users.edit');
         Route::put('/users/{id}', [AuthController::class, 'update'])->name('admin.users.update');
@@ -128,7 +129,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/outlets/{id}/edit', [OutletController::class, 'edit'])->name('outlets.edit');
         Route::get('/outlets/autocomplete', [OutletController::class, 'autocomplete']);
         Route::delete('/outlets/{id}', [OutletController::class, 'destroy'])->name('outlets.destroy');
-        Route::patch('/outlets/{id}/deactivate', [OutletController::class, 'deactivate'])->name('outlets.deactivate'); 
+        Route::patch('/outlets/{id}/deactivate', [OutletController::class, 'deactivate'])->name('outlets.deactivate');
         Route::patch('/outlets/{id}/activate', [OutletController::class, 'activate'])->name('outlets.activate');
 
 
@@ -148,15 +149,15 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/produks', [ProdukController::class, 'index'])->name('produks.index');
         Route::get('/produks/create', [ProdukController::class, 'createAdmin'])->name('produks.create');
         Route::post('/produks', [ProdukController::class, 'store'])->name('produks.store');
-        
         Route::get('/produks/{id}/edit', [ProdukController::class, 'edit'])->name('produks.edit');
         Route::put('/produks/{id}', [ProdukController::class, 'update'])->name('produks.update');
-        Route::delete('/produks/{id}', [ProdukController::class, 'destroy'])->name('produks.destroy');
-        Route::patch('/produks/{id}/deactivate', [ProdukController::class, 'deactivate'])->name('produks.deactivate'); 
+        Route::patch('/produks/{id}/deactivate', [ProdukController::class, 'deactivate'])->name('produks.deactivate');
         Route::patch('/produks/{id}/activate', [ProdukController::class, 'activate'])->name('produks.activate');
 
         // MANAJEMEN TRANSAKSI
         Route::get('/data-transaksi', [TransaksiController::class, 'index'])->name('data-transaksi.index');
+        Route::get('/data-transaksi/{resi}/edit', [TransaksiController::class, 'editAdmin'])->name('admin.transaksi.edit');
+
 
         // MANAJEMEN PENGAJUAN
         Route::get('/pengajuan', [PengajuanController::class, 'indexAdmin'])->name('admin.pengajuan.index');
@@ -190,9 +191,19 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/units/{id}', [UnitController::class, 'destroy'])->name('units.destroy');
     Route::put('/units/{id}', [UnitController::class, 'update'])->name('units.update');
     Route::post('/produks/unit', [ProdukController::class, 'storeUnit'])->name('produks-unit.store');
+    Route::post('/check-sku', [ProdukController::class, 'checkSku']);
+    Route::delete('/produks/{id}', [ProdukController::class, 'destroy'])->name('produks.destroy');
+
 
     // MANAJEMEN USER
     Route::delete('/karyawan/{id}', [AuthController::class, 'destroy'])->name('users.destroy');
     Route::post('/karyawan', [AuthController::class, 'storeKaryawan'])->name('master.users.store');
+    Route::post('/check-email', [AuthController::class, 'checkEmail'])->name('check.email');
+    Route::post('/verify-date-of-birth', [AuthController::class, 'verifyDateOfBirth']);
+    Route::get('/edit-profile/{id}', [AuthController::class, 'editProfile'])->name('edit.profile');
+    Route::get('/edit-admin/{id}', [AuthController::class, 'editAdmin'])->name('edit.admin');
+
+    Route::put('/profile/{id}', [AuthController::class, 'updateProfile'])->name('profile.update');
+
 });
 

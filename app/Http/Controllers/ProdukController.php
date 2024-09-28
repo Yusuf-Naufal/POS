@@ -207,7 +207,6 @@ class ProdukController extends Controller
         }
     }
 
-
     public function deactivate($id)
     {
         $produk = Produk::find($id);
@@ -245,6 +244,18 @@ class ProdukController extends Controller
         }
 
         return $sku;
+    }
+
+    public function checkSku(Request $request)
+    {
+        $request->validate([
+            'sku' => 'required|string|max:255', // Validate SKU input
+        ]);
+
+        $sku = $request->sku;
+        $exists = Produk::where('sku', $sku)->exists(); // Check if SKU exists
+
+        return response()->json(['exists' => $exists]);
     }
 
 
@@ -497,7 +508,7 @@ class ProdukController extends Controller
         
         $produk->save();
 
-        return redirect()->route('master.produk.index', $produk->id_outlet)->with('success', 'Produk added successfully.');
+        return redirect()->route('master.produk.index', $produk->id_outlet)->with('success', 'Produk Berhasil Ditambah!!');
     }
 
     public function editMaster($id)
@@ -565,7 +576,7 @@ class ProdukController extends Controller
         $produk->save();
 
         // Redirect to the products list for the specified outlet
-        return redirect()->route('master.produk.index')->with('success', 'Produk updated successfully!');
+        return redirect()->route('master.produk.index')->with('success', 'Produk Berhasil Diupdate!!');
     }
 
     public function deactivateMaster($id)
@@ -575,7 +586,7 @@ class ProdukController extends Controller
         if ($produk) {
             $produk->status = 'Habis'; // Change status to 'Inactive' or however you represent deactivation
             $produk->save();
-            return redirect()->route('master.produk.index')->with('success', 'Produk status updated to Inactive.');
+            return redirect()->route('master.produk.index')->with('success', 'Produk Dinon-aktifkan');
         }
 
         return redirect()->route('master.produk.index')->with('error', 'Produk not found.');
@@ -588,7 +599,7 @@ class ProdukController extends Controller
         if ($produk) {
             $produk->status = 'Aktif'; // Change status back to 'Active'
             $produk->save();
-            return redirect()->route('master.produk.index')->with('success', 'Produk status updated to Active.');
+            return redirect()->route('master.produk.index')->with('success', 'Produk Diaktifkan');
         }
 
         return redirect()->route('master.produk.index')->with('error', 'Produk not found.');

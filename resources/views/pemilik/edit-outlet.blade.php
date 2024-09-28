@@ -13,11 +13,10 @@
                 </label>
             </div>
 
-
             <!-- Card Container -->
             <div class="bg-white h-auto w-full shadow-md rounded-lg p-6">
                 <div class="flex flex-wrap gap-4">
-                    <div class="flex w-full gap-4 flex-col md:flex-row">
+                    <div class="flex w-full items-center justify-center align-top gap-4 flex-col md:flex-row">
                         <div>
                             <!-- Upload Image Section -->
                             <div class="flex items-center justify-center w-64 h-64">
@@ -48,37 +47,38 @@
                             <!-- Form Fields -->
                             <div class="mb-4 w-full">
                                 <label class="block text-sm font-medium text-gray-700" for="nama_outlet">Nama Outlet</label>
-                                <input type="text" value="{{ $outlet->nama_outlet }}" id="nama_outlet" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="nama_outlet">
+                                <input type="text" value="{{ $outlet->nama_outlet }}" id="nama_outlet" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="nama_outlet" required>
                             </div>
 
                             <div class="flex gap-4 flex-col md:flex-row">
                                 <div class="w-full md:w-1/3 mb-4">
                                     <label class="block text-sm font-medium text-gray-700" for="no_telp">Telepon</label>
-                                    <input type="text" value="{{ $outlet->no_telp }}" id="no_telp" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="no_telp">
+                                    <input type="text" value="{{ $outlet->no_telp }}" id="no_telp" maxlength="13" pattern="[0-9]*" oninput="this.value=this.value.replace(/[^0-9 +\-]/g,'');" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="no_telp" required>
                                 </div>
                                 <div class="w-full md:w-1/3 mb-4">
                                     <label class="block text-sm font-medium text-gray-700" for="email">Email</label>
-                                    <input type="text" value="{{ $outlet->email }}" id="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="email">
+                                    <input type="text" value="{{ $outlet->email }}" id="email" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="email" required>
                                 </div>
                                 <div class="relative w-full md:w-1/3 mb-4">
                                     <label for="pemilik" class="block text-sm font-medium text-gray-700">Pemilik</label>
-                                    <input type="text" value="{{ $outlet->pemilik }}" id="pemilik" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="pemilik">
+                                    <input type="text" value="{{ $outlet->pemilik }}" id="pemilik" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="pemilik" required>
                                     
                                 </div>
                             </div>
 
                             <div class="flex gap-4 flex-col md:flex-row">
                                 <div class="w-full md:w-1/3 mb-4">
-                                    <label class="block text-sm font-medium text-gray-700" for="instagram">Instagram</label>
-                                    <input type="text" value="{{ $outlet->instagram }}"  id="instagram" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="instagram">
+                                    <label class="block text-sm font-medium text-gray-700" for="instagram">Instagram <span class="font-thin text-gray-600">(Opsional)</span></label>
+                                    <input type="text" value="{{ $outlet->instagram }}"  id="instagram" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="instagram" placeholder="Username Instagram">
+
                                 </div>
                                 <div class="w-full md:w-1/3 mb-4">
-                                    <label class="block text-sm font-medium text-gray-700" for="facebook">Facebook</label>
-                                    <input type="text" value="{{ $outlet->facebook }}" id="facebook" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="facebook">
+                                    <label class="block text-sm font-medium text-gray-700" for="facebook">Facebook <span class="font-thin text-gray-600">(Opsional)</span></label>
+                                    <input type="text" value="{{ $outlet->facebook }}" id="facebook" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="facebook" placeholder="Username Facebook">
                                 </div>
                                 <div class="w-full md:w-1/3 mb-4">
-                                    <label class="block text-sm font-medium text-gray-700" for="tiktok">Tiktok</label>
-                                    <input type="text" value="{{ $outlet->tiktok }}" id="tiktok" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="tiktok">
+                                    <label class="block text-sm font-medium text-gray-700" for="tiktok">Tiktok <span class="font-thin text-gray-600">(Opsional)</span></label>
+                                    <input type="text" value="{{ $outlet->tiktok }}" id="tiktok" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="tiktok" placeholder="Username Tiktok">
                                 </div>
                             </div>
                         </div>
@@ -86,11 +86,21 @@
 
                     <div class="mb-4 w-full">
                         <label class="block text-sm font-medium text-gray-700" for="alamat">Alamat</label>
-                        <input type="text" value="{{ $outlet->alamat }}" id="alamat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="alamat">
+                        <input type="text" value="{{ $outlet->alamat }}" id="alamat" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="alamat" required>
                     </div>
+
+                    <div class="mb-4 w-full">
+                        <label class="block text-sm font-medium text-gray-700" for="jam_operasional">Jam Operasional</label>
+                        <div class="flex items-center space-x-2">
+                            <input value="{{ $outlet->jam_buka }}" type="time" name="jam_buka" id="jam_buka" class="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            <span>-</span>
+                            <input value="{{ $outlet->jam_tutup }}" type="time" name="jam_tutup" id="jam_tutup" class="mt-1 block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        </div>
+                    </div>
+
                     <div class="mb-4 ">
                         <label class="block text-sm font-medium text-gray-700" for="alamat">Pin</label>
-                        <input type="text" value="{{ $outlet->pin }}" id="pin" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="pin">
+                        <input type="text" value="{{ $outlet->pin }}" id="pin" maxlength="4" pattern="[0-9]*" oninput="this.value=this.value.replace(/[^0-9]/g,'');" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" name="pin" required>
                     </div>
 
                     <!-- Button Container -->
@@ -144,8 +154,37 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- JavaScript for Image Preview -->
     <script>
+        @if ($errors->any())
+            let errorMessages = '';
+            @if ($errors->has('email'))
+                errorMessages += '{{ addslashes($errors->first('email')) }}\n'; // Specific email error
+            @endif
+            @if ($errors->has('error'))
+                errorMessages += '{{ addslashes($errors->first('error')) }}\n'; 
+            @endif
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: "error",
+                title: "Registration gagal!",
+                text: errorMessages // Display all error messages here
+            });
+        @endif
+
         var mediaStream = null; // Store the media stream globally
 
         function previewImage(event) {
