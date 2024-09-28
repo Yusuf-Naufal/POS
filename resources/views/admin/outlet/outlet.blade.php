@@ -122,10 +122,10 @@
                                             </li>
                                         @endif
                                         <li>
-                                            <form action="{{ route('outlets.destroy', $outlet->id) }}" method="POST" class="block">
+                                            <form id="delete-form-{{ $outlet->id }}" action="{{ route('outlets.destroy', $outlet->id) }}" method="POST" class="block">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left">
+                                                <button type="button" class="delete-button block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left" data-outlet-id="{{ $outlet->id }}">
                                                     Hapus
                                                 </button>
                                             </form>
@@ -133,7 +133,7 @@
                                         <li>
                                             <form action="{{ route('outlets.products', $outlet->id) }}" method="GET" class="block">
                                                 @csrf
-                                                <button type="submit" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left">
+                                                <button type="submit" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white w-full text-left" >
                                                     Produk
                                                 </button>
                                             </form>
@@ -160,6 +160,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const deleteButtons = document.querySelectorAll('.delete-button');
             // Handle dropdown toggle
             document.querySelectorAll('.dropdown-toggle-button').forEach(button => {
                 button.addEventListener('click', function(event) {
@@ -177,6 +178,29 @@
                     if (!menu.contains(event.target) && !menu.previousElementSibling.contains(event.target)) {
                         menu.classList.add('hidden');
                     }
+                });
+            });
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const outletId = this.getAttribute('data-outlet-id');
+
+                    // Show SweetAlert confirmation
+                    Swal.fire({
+                        title: 'Apakah Anda yakin?',
+                        text: "Anda tidak bisa mengembalikan outlet yang dihapus!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // If confirmed, submit the form
+                            document.getElementById('delete-form-' + outletId).submit();
+                        }
+                    });
                 });
             });
         });
