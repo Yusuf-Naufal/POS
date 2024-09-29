@@ -4,8 +4,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Register Outlet</title>
-    @vite('resources/css/app.css')
+    <link rel="stylesheet" href="public/build/assets/app-DIl25HKw.css">
+    <script src='public/build/assets/app-BmrwFrBv.js'></script>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet" />
+    
 </head>
 <body class="min-h-screen flex items-center justify-center bg-gray-100 px-5">
     <div class="w-96 flex flex-col md:w-auto mx-auto bg-white rounded-lg shadow-lg p-8">
