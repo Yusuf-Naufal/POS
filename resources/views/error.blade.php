@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Error</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    @vite('resources/css/app.css')
+    {{-- TAILWIND --}}
+    <link rel="stylesheet" href="public/build/assets/app-DIl25HKw.css">
+    <script src='public/build/assets/app-BmrwFrBv.js'></script>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">

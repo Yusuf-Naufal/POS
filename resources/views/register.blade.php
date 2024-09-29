@@ -5,7 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Register Pemilik</title>
-    @vite('resources/css/app.css')
+    {{-- TAILWIND --}}
+    <link rel="stylesheet" href="public/build/assets/app-DIl25HKw.css">
+    <script src='public/build/assets/app-BmrwFrBv.js'></script>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet" />
 
     <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
