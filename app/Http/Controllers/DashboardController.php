@@ -21,13 +21,13 @@ class DashboardController extends Controller
 
         // Ambil produk yang terkait dengan outlet
         $produks = Produk::with('detailTransaksi')  // Assuming 'detailTransaksi' is the relationship name
-                    ->leftJoin('detail_transaksi', 'produks.id', '=', 'detail_transaksi.id_produk')
-                    ->select('produks.*', DB::raw('COALESCE(SUM(detail_transaksi.qty), 0) as total_sold'))
-                    ->where('produks.id_outlet', $outlets->id)
-                    ->groupBy('produks.id')
-                    ->orderBy('total_sold', 'desc') 
-                    ->orderBy('produks.nama_produk', 'asc') 
-                    ->get();
+            ->leftJoin('detail_transaksi', 'produks.id', '=', 'detail_transaksi.id_produk')
+            ->select('produks.id', 'produks.nama_produk', 'produks.harga_jual', DB::raw('COALESCE(SUM(detail_transaksi.qty), 0) as total_sold'))
+            ->where('produks.id_outlet', $outlets->id)
+            ->groupBy('produks.id', 'produks.nama_produk', 'produks.harga_jual') // Tambahkan kolom-kolom ini ke GROUP BY
+            ->orderBy('total_sold', 'desc')
+            ->orderBy('produks.nama_produk', 'asc')
+            ->get();
 
         // Group products by category
         $groupedProduks = $produks->groupBy('id_kategori');
@@ -40,7 +40,7 @@ class DashboardController extends Controller
         ]);
     }
 
-    public function MasterDashboard() 
+    public function MasterDashboard()
     {
         $user = auth()->user();
         $outlet = $user->outlet;
@@ -123,7 +123,7 @@ class DashboardController extends Controller
 
         // Generate date range
         $dateRange = [];
-        
+
         if ($periode === 'tahun') {
             // For 'tahun', generate month labels (e.g., January, February)
             $date = $startDate->copy();
@@ -169,7 +169,7 @@ class DashboardController extends Controller
 
 
 
-    
+
 
 
 

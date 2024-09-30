@@ -638,11 +638,13 @@ class ProdukController extends Controller
 
         $terjual = Produk::with(['units', 'kategoris'])
             ->leftJoin('detail_transaksi', 'produks.id', '=', 'detail_transaksi.id_produk')
-            ->leftJoin('transaksi', 'detail_transaksi.id_transaksi', '=', 'transaksi.id')
-            ->select('produks.*', DB::raw('COALESCE(SUM(detail_transaksi.qty), 0) as total_qty'))
-            ->where('transaksi.id_outlet', $outlet->id)
-            ->groupBy('produks.id')
-            ->orderBy('total_qty', 'desc') 
+            ->leftJoin('transaksi', function ($join) use ($outlet) {
+                $join->on('detail_transaksi.id_transaksi', '=', 'transaksi.id')
+                     ->where('transaksi.id_outlet', '=', $outlet->id);
+            })
+            ->select('produks.id', 'produks.nama_produk', 'produks.harga_jual', DB::raw('COALESCE(SUM(detail_transaksi.qty), 0) as total_qty'))
+            ->groupBy('produks.id', 'produks.nama_produk', 'produks.harga_jual')
+            ->orderBy('total_qty', 'desc')
             ->get();
 
         // Filter by selected category if applicable
