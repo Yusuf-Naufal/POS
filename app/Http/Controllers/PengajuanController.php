@@ -30,7 +30,6 @@ class PengajuanController extends Controller
         return view('admin.pengajuan.detail-pengajuan', compact('pengajuan'));
     }
 
-
     public function storeOutlet(Request $request){
          $validation = Validator::make($request->all(), [
             'nama_outlet' => 'required|string|max:255',

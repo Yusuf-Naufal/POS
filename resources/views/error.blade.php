@@ -6,7 +6,7 @@
     <title>Error</title>
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     {{-- TAILWIND --}}
-    <link rel="stylesheet" href="public/build/assets/app-DIl25HKw.css">
+    <link rel="stylesheet" href="public/build/assets/app-B8Xt-y0X.css">
     <script src='public/build/assets/app-BmrwFrBv.js'></script>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet">
 </head>

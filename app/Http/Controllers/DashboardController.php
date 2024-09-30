@@ -20,14 +20,15 @@ class DashboardController extends Controller
 
 
         // Ambil produk yang terkait dengan outlet
-        $produks = Produk::with('detailTransaksi')  // Assuming 'detailTransaksi' is the relationship name
+        $produks = Produk::with(['detailTransaksi', 'kategoris']) // Eager load kategoris
             ->leftJoin('detail_transaksi', 'produks.id', '=', 'detail_transaksi.id_produk')
-            ->select('produks.id', 'produks.nama_produk', 'produks.harga_jual', DB::raw('COALESCE(SUM(detail_transaksi.qty), 0) as total_sold'))
+            ->select('produks.id', 'produks.nama_produk', 'produks.harga_jual', 'produks.id_kategori', 'produks.foto', DB::raw('COALESCE(SUM(detail_transaksi.qty), 0) as total_sold'))
             ->where('produks.id_outlet', $outlets->id)
-            ->groupBy('produks.id', 'produks.nama_produk', 'produks.harga_jual') // Tambahkan kolom-kolom ini ke GROUP BY
+            ->groupBy('produks.id', 'produks.nama_produk', 'produks.harga_jual', 'produks.id_kategori', 'produks.foto') // Include foto in GROUP BY
             ->orderBy('total_sold', 'desc')
             ->orderBy('produks.nama_produk', 'asc')
             ->get();
+
 
         // Group products by category
         $groupedProduks = $produks->groupBy('id_kategori');

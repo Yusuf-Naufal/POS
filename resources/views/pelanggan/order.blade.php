@@ -76,7 +76,7 @@
                 </div>
             
                 <!-- Modal Body (Scrollable) -->
-                <div class="modal-body p-6 max-h-96 overflow-y-auto">
+                <div class="modal-body p-6 max-h-96 overflow-y-scroll">
                     <div class="md:flex gap-6">
                         <!-- Order Items Review -->
                         <div class="w-full md:w-1/2">

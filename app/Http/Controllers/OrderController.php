@@ -29,14 +29,15 @@ class OrderController extends Controller
         $outlet = Outlet::findOrFail($id);
 
         // Fetch the products directly associated with the selected outlet and order by sales
-        $produks = Produk::with('detailTransaksi')  // Assuming 'detailTransaksi' is the relationship name
-                    ->leftJoin('detail_transaksi', 'produks.id', '=', 'detail_transaksi.id_produk')
-                    ->select('produks.*', DB::raw('COALESCE(SUM(detail_transaksi.qty), 0) as total_sold'))
-                    ->where('produks.id_outlet', $outlet->id)
-                    ->groupBy('produks.id')
-                    ->orderBy('total_sold', 'desc') 
-                    ->orderBy('produks.nama_produk', 'asc') 
-                    ->get();
+        $produks = Produk::with('detailTransaksi')  // Load related detailTransaksi
+            ->leftJoin('detail_transaksi', 'produks.id', '=', 'detail_transaksi.id_produk')
+            ->select('produks.id', 'produks.nama_produk', 'produks.harga_jual', 'produks.foto', 'produks.id_kategori', DB::raw('COALESCE(SUM(detail_transaksi.qty), 0) as total_sold'))
+            ->where('produks.id_outlet', $outlet->id)
+            ->groupBy('produks.id', 'produks.nama_produk', 'produks.harga_jual', 'produks.foto', 'produks.id_kategori') // Group by all non-aggregated fields
+            ->orderBy('total_sold', 'desc')
+            ->orderBy('produks.nama_produk', 'asc')
+            ->get();
+
 
         // Group products by category
         $groupedProduks = $produks->groupBy('id_kategori');

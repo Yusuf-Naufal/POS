@@ -38,6 +38,7 @@
                         <h2 class="text-xl font-semibold text-purple-800 mt-4">
                             {{ $produkGroup->first()->kategoris->nama_kategori ?? 'Uncategorized' }} <!-- Menampilkan nama kategori -->
                         </h2>
+                        
                         <div id="product-grid-{{ $kategoriId }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-2">
                             @foreach($produkGroup as $produk)
                             <button class="product-item relative flex flex-col bg-white rounded-lg shadow-md overflow-hidden

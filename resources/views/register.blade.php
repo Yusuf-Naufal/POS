@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Register Pemilik</title>
     {{-- TAILWIND --}}
-    <link rel="stylesheet" href="public/build/assets/app-DIl25HKw.css">
+    <link rel="stylesheet" href="public/build/assets/app-B8Xt-y0X.css">
     <script src='public/build/assets/app-BmrwFrBv.js'></script>
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet" />
 
