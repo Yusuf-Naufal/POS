@@ -78,7 +78,7 @@ class OutletController extends Controller
         $outlet->facebook = $request->facebook;
         $outlet->tiktok = $request->tiktok;
         $outlet->alamat = $request->alamat;
-        $outlet->foto = $foto ? 'assets/outlet/' . $foto : null;
+        $outlet->foto = $foto ? 'outlet/' . $foto : null;
         $outlet->jam_buka = $request->jam_buka;
         $outlet->jam_tutup = $request->jam_tutup;
         
@@ -147,7 +147,7 @@ class OutletController extends Controller
             // Simpan foto baru
             $foto = time() . '.' . $request->foto->extension();
             $request->foto->move(public_path('assets/outlet'), $foto); // Simpan ke folder public/assets/outlet
-            $outlet->foto = 'assets/outlet/' . $foto; // Simpan jalur foto ke database
+            $outlet->foto = 'outlet/' . $foto; // Simpan jalur foto ke database
         }
 
 
@@ -180,7 +180,7 @@ class OutletController extends Controller
         if ($outlet) {
             // Delete the outlet's photo if it exists
             if ($outlet->foto) {
-                $photoPath = public_path('storage/assets/' . $outlet->foto);
+                $photoPath = public_path('assets/' . $outlet->foto);
                 if (file_exists($photoPath)) {
                     unlink($photoPath); // Delete the outlet's photo file
                 }
@@ -189,8 +189,8 @@ class OutletController extends Controller
             // Loop through the products to delete their photos
             foreach ($outlet->produks as $produk) {
                 if ($produk->foto) {
-                    // Assuming the product photos are stored in 'storage/assets/products'
-                    $productPhotoPath = public_path('storage/assets/' . $produk->foto);
+                    // Assuming the product photos are stored in
+                    $productPhotoPath = public_path('assets/' . $produk->foto);
                     if (file_exists($productPhotoPath)) {
                         unlink($productPhotoPath); // Delete the product's photo file
                     }

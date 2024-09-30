@@ -77,7 +77,7 @@ class PengajuanController extends Controller
         $outlet->facebook = $request->facebook;
         $outlet->tiktok = $request->tiktok;
         $outlet->alamat = $request->alamat;
-        $outlet->foto = $foto ? 'assets/outlet/' . $foto : null;
+        $outlet->foto = $foto ? 'outlet/' . $foto : null;
         $outlet->jam_buka = $request->jam_buka;
         $outlet->jam_tutup = $request->jam_tutup;
         

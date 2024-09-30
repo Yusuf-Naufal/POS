@@ -45,8 +45,6 @@ class OrderController extends Controller
         return view('pelanggan.order', compact('outlet', 'groupedProduks'));
     }
 
-
-
     public function store(Request $request)
     {
         // Validasi input
@@ -148,7 +146,7 @@ class OrderController extends Controller
                             "Pesanan Anda telah kami terima. Berikut adalah nomor resi orderan Anda: *$resiNumber* 📦\n\n" .
                             "📝 *Pesanan Anda akan segera kami proses!*\n\n" .
                             "🔍 Untuk cek status order, silakan klik tautan berikut:\n" .
-                            "👉 http://192.168.1.9:8000/cek-order?resi=$resiNumber\n\n" .
+                            "👉 https://mykantin.my.id/cek-order?resi=$resiNumber\n\n" .
                             "📅 Terima kasih telah berbelanja di *$waOutlet*! 😊",
                 'delay' => '10',
                 'countryCode' => '62',

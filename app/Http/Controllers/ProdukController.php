@@ -146,7 +146,7 @@ class ProdukController extends Controller
             'id_unit' => 'required|exists:units,id',
             'harga_jual' => 'required|numeric|min:0',
             'harga_modal' => 'required|numeric|min:0',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif',
         ]);
 
         if ($validation->fails()) {
@@ -166,7 +166,7 @@ class ProdukController extends Controller
             // Simpan foto baru
             $foto = time() . '.' . $request->foto->extension();
             $request->foto->move(public_path('assets/produk'), $foto); // Simpan ke folder public/assets/produk
-            $produk->foto = 'assets/produk/' . $foto; // Simpan jalur foto ke database
+            $produk->foto = 'produk/' . $foto; // Simpan jalur foto ke database
         }
 
 
@@ -377,7 +377,7 @@ class ProdukController extends Controller
             // Simpan foto baru
             $foto = time() . '.' . $request->foto->extension();
             $request->foto->move(public_path('assets/produk'), $foto); // Simpan ke folder public/assets/produk
-            $produk->foto = 'assets/produk/' . $foto; // Simpan jalur foto ke database
+            $produk->foto = 'produk/' . $foto; // Simpan jalur foto ke database
         }
 
 
@@ -575,7 +575,7 @@ class ProdukController extends Controller
             // Simpan foto baru
             $foto = time() . '.' . $request->foto->extension();
             $request->foto->move(public_path('assets/produk'), $foto); // Simpan ke folder public/assets/produk
-            $produk->foto = 'assets/produk/' . $foto; // Simpan jalur foto ke database
+            $produk->foto = 'produk/' . $foto; // Simpan jalur foto ke database
         }
 
 

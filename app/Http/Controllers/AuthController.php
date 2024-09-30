@@ -112,7 +112,6 @@ class AuthController extends Controller
         return response()->json(['isValid' => $isValid]);
     }
 
-
     public function registerView()
     {
         return view('register');
@@ -470,7 +469,6 @@ class AuthController extends Controller
         return view('pemilik.user.add-user');
     }
     
-
     public function storeKaryawan(Request $request)
     {
         $login = auth()->user()->role;
