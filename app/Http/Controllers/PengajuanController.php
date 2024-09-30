@@ -57,8 +57,15 @@ class PengajuanController extends Controller
             ])->withInput();
         }
 
-        $foto = time() . '.' . $request->foto->extension();
-        $request->foto->storeAs('public/assets/outlet', $foto);
+        // Cek dan simpan foto jika ada
+        $foto = null;
+        if ($request->hasFile('image')) {
+            // Buat nama file unik
+            $foto = time() . '.' . $request->image->extension();
+
+            // Pindahkan file ke folder public/assets/outlet
+            $request->image->move(public_path('assets/outlet'), $foto);
+        }
 
         $outlet = new Pengajuan_Outlet();
         $outlet->nama_outlet = $request->nama_outlet;
@@ -70,7 +77,7 @@ class PengajuanController extends Controller
         $outlet->facebook = $request->facebook;
         $outlet->tiktok = $request->tiktok;
         $outlet->alamat = $request->alamat;
-        $outlet->foto = 'outlet/' . $foto;
+        $outlet->foto = $foto ? 'assets/outlet/' . $foto : null;
         $outlet->jam_buka = $request->jam_buka;
         $outlet->jam_tutup = $request->jam_tutup;
         

@@ -158,16 +158,17 @@ class ProdukController extends Controller
         // Jika ada foto baru yang diunggah
         if ($request->hasFile('foto')) {
             // Hapus foto lama jika ada
-            if ($produk->foto && Storage::exists('public/assets/' . $produk->foto)) {
-                // Menghapus file yang ada di path penyimpanan
-                Storage::delete('public/assets/' . $produk->foto);
+            if ($produk->foto && file_exists(public_path('assets/' . $produk->foto))) {
+                // Menghapus file yang ada di path public
+                unlink(public_path('assets/' . $produk->foto));
             }
 
             // Simpan foto baru
             $foto = time() . '.' . $request->foto->extension();
-            $request->foto->storeAs('public/assets/produk', $foto);
-            $produk->foto = 'produk/' . $foto;
+            $request->foto->move(public_path('assets/produk'), $foto); // Simpan ke folder public/assets/produk
+            $produk->foto = 'assets/produk/' . $foto; // Simpan jalur foto ke database
         }
+
 
         // Perbarui atribut produk
         $produk->nama_produk = $request->nama_produk;
@@ -316,8 +317,14 @@ class ProdukController extends Controller
             return back()->withErrors($validation);
         }
 
-        $foto = time() . '.' . $request->foto->extension();
-        $request->foto->storeAs('public/assets/produk', $foto);
+        $foto = null; // Inisialisasi foto dengan null
+        if ($request->hasFile('foto')) {
+            // Buat nama file unik
+            $foto = time() . '.' . $request->foto->extension();
+
+            // Pindahkan file ke folder public/assets/produk
+            $request->foto->move(public_path('assets/produk'), $foto);
+        }
 
         $sku = $request->sku ? $request->sku : $this->generateSKU();
 
@@ -332,7 +339,7 @@ class ProdukController extends Controller
         $produk->harga_jual = $request->harga_jual;
         $produk->harga_modal = $request->harga_modal;
         $produk->catatan = $request->catatan;
-        $produk->foto = 'produk/' . $foto;
+        $produk->foto = $foto ? 'produk/' . $foto : null;
         $produk->status = $request->status;
         
         $produk->save();
@@ -362,15 +369,17 @@ class ProdukController extends Controller
         // Jika ada foto baru yang diunggah
         if ($request->hasFile('foto')) {
             // Hapus foto lama jika ada
-            if ($produk->foto && Storage::exists('public/assets/' . $produk->foto)) {
-                Storage::delete('public/assets/' . $produk->foto);
+            if ($produk->foto && file_exists(public_path('assets/' . $produk->foto))) {
+                // Menghapus file yang ada di path public
+                unlink(public_path('assets/' . $produk->foto));
             }
 
             // Simpan foto baru
             $foto = time() . '.' . $request->foto->extension();
-            $request->foto->storeAs('public/assets/produk', $foto);
-            $produk->foto = 'produk/' . $foto;
+            $request->foto->move(public_path('assets/produk'), $foto); // Simpan ke folder public/assets/produk
+            $produk->foto = 'assets/produk/' . $foto; // Simpan jalur foto ke database
         }
+
 
         // Perbarui atribut produk
         $produk->nama_produk = $request->nama_produk;
@@ -487,8 +496,14 @@ class ProdukController extends Controller
             return back()->withErrors($validation);
         }
 
-        $foto = time() . '.' . $request->foto->extension();
-        $request->foto->storeAs('public/assets/produk', $foto);
+        $foto = null; // Inisialisasi foto dengan null
+        if ($request->hasFile('foto')) {
+            // Buat nama file unik
+            $foto = time() . '.' . $request->foto->extension();
+
+            // Pindahkan file ke folder public/assets/produk
+            $request->foto->move(public_path('assets/produk'), $foto);
+        }
 
         $sku = $request->sku ? $request->sku : $this->generateSKU();
 
@@ -503,7 +518,7 @@ class ProdukController extends Controller
         $produk->harga_jual = $request->harga_jual;
         $produk->harga_modal = $request->harga_modal;
         $produk->catatan = $request->catatan;
-        $produk->foto = 'produk/' . $foto;
+        $produk->foto = $foto ? 'produk/' . $foto : null;
         $produk->status = $request->status;
         
         $produk->save();
@@ -552,15 +567,17 @@ class ProdukController extends Controller
         // Jika ada foto baru yang diunggah
         if ($request->hasFile('foto')) {
             // Hapus foto lama jika ada
-            if ($produk->foto && Storage::exists('public/assets/' . $produk->foto)) {
-                Storage::delete('public/assets/' . $produk->foto);
+            if ($produk->foto && file_exists(public_path('assets/' . $produk->foto))) {
+                // Menghapus file yang ada di path public
+                unlink(public_path('assets/' . $produk->foto));
             }
 
             // Simpan foto baru
             $foto = time() . '.' . $request->foto->extension();
-            $request->foto->storeAs('public/assets/produk', $foto);
-            $produk->foto = 'produk/' . $foto;
+            $request->foto->move(public_path('assets/produk'), $foto); // Simpan ke folder public/assets/produk
+            $produk->foto = 'assets/produk/' . $foto; // Simpan jalur foto ke database
         }
+
 
         // Perbarui atribut produk
         $produk->nama_produk = $request->nama_produk;

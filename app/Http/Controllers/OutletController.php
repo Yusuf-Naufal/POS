@@ -58,8 +58,15 @@ class OutletController extends Controller
             ])->withInput();
         }
 
-        $foto = time() . '.' . $request->foto->extension();
-        $request->foto->storeAs('public/assets/outlet', $foto);
+        // Cek dan simpan foto jika ada
+        $foto = null;
+        if ($request->hasFile('image')) {
+            // Buat nama file unik
+            $foto = time() . '.' . $request->image->extension();
+
+            // Pindahkan file ke folder public/assets/outlet
+            $request->image->move(public_path('assets/outlet'), $foto);
+        }
 
         $outlet = new Outlet();
         $outlet->nama_outlet = $request->nama_outlet;
@@ -71,7 +78,7 @@ class OutletController extends Controller
         $outlet->facebook = $request->facebook;
         $outlet->tiktok = $request->tiktok;
         $outlet->alamat = $request->alamat;
-        $outlet->foto = 'outlet/' . $foto;
+        $outlet->foto = $foto ? 'assets/outlet/' . $foto : null;
         $outlet->jam_buka = $request->jam_buka;
         $outlet->jam_tutup = $request->jam_tutup;
         
@@ -132,16 +139,17 @@ class OutletController extends Controller
         // Jika ada foto baru yang diunggah
         if ($request->hasFile('foto')) {
             // Hapus foto lama jika ada
-            if ($outlet->foto && Storage::exists('public/assets/' . $outlet->foto)) {
-            // Menghapus file yang ada di path penyimpanan
-            Storage::delete('public/assets/' . $outlet->foto);
-        }
+            if ($outlet->foto && file_exists(public_path('assets/' . $outlet->foto))) {
+                // Menghapus file yang ada di path public
+                unlink(public_path('assets/' . $outlet->foto));
+            }
 
             // Simpan foto baru
             $foto = time() . '.' . $request->foto->extension();
-            $request->foto->storeAs('public/assets/outlet', $foto);
-            $outlet->foto = 'outlet/' . $foto;
+            $request->foto->move(public_path('assets/outlet'), $foto); // Simpan ke folder public/assets/outlet
+            $outlet->foto = 'assets/outlet/' . $foto; // Simpan jalur foto ke database
         }
+
 
         // Perbarui atribut outlet
         $outlet->nama_outlet = $request->nama_outlet;
