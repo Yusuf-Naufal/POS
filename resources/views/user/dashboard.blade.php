@@ -49,7 +49,7 @@
                                 onclick="{{ $produk->status !== 'Habis' ? 'addToOrder(\'' . $produk->id . '\', \'' . $produk->nama_produk . '\', \'' . number_format($produk->harga_jual, 0, ',', '.') . '\')' : '' }}">
                                 
                                 <div class="relative w-full h-32 bg-white items-center flex justify-center">
-                                    <img src="{{ asset('assets/' . $produk->foto ) }}" alt="{{ $produk->nama_produk }}" class="w-full h-full object-contain">
+                                    <img src="{{ asset('public/assets/' . $produk->foto ) }}" alt="{{ $produk->nama_produk }}" class="w-full h-full object-contain">
                                     
                                     @if($produk->status === 'Habis')
                                     <!-- Watermark for "Habis" -->

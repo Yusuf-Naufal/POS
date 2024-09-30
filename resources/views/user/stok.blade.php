@@ -43,7 +43,7 @@
                             data-id="{{ $produk->id }}"
                             onclick="addToDetail('{{ $produk->id }}', '{{ $produk->nama_produk }}')">
                             <div class="relative w-full h-32 bg-white items-center flex justify-center">
-                                <img src="{{ asset('assets/' . $produk->foto ) }}" alt="{{ $produk->name }}" class="w-full h-full object-contain">
+                                <img src="{{ asset('public/assets/' . $produk->foto ) }}" alt="{{ $produk->name }}" class="w-full h-full object-contain">
                             </div>
                             <div class="p-4 flex flex-col items-start justify-start">
                                 <h2 class="text-sm font-light text-gray-800 mb-2">{{ $produk->nama_produk }}</h2>

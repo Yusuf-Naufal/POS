@@ -31,7 +31,7 @@
                         
                         <div class="flex items-center space-x-4 {{ $item->status === 'Habis' ? 'cursor-not-allowed' : 'cursor-pointer' }} relative" {{ $item->status === 'Habis' ? '' : 'onclick=toggleItem(event)' }}>
                             <div class="relative">
-                                <img class="w-16 h-16 rounded-lg object-cover shadow-md" src="{{ asset('assets/' . $item->foto ) }}" alt="Product Image">
+                                <img class="w-16 h-16 rounded-lg object-cover shadow-md" src="{{ asset('public/assets/' . $item->foto ) }}" alt="Product Image">
 
                                 @if($item->status === 'Habis')
                                 <!-- Watermark overlay when the product is out of stock -->

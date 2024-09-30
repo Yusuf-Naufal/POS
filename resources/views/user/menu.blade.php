@@ -27,7 +27,7 @@
             <!-- Outlet Cards -->
             <div class="p-4 m-3 bg-purple-100 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 mt-5">
                 <a type="button" class="flex items-center w-full text-left" data-modal-target="default-modal-{{ $Outlet->id }}" data-modal-toggle="default-modal-{{ $Outlet->id }}">
-                    <img class="w-14 h-14 rounded-lg object-cover" src="{{ asset('assets/' . $Outlet->foto ) }}" alt="Outlet Image">
+                    <img class="w-14 h-14 rounded-lg object-cover" src="{{ asset('public/assets/' . $Outlet->foto ) }}" alt="Outlet Image">
                     <div class="ml-4 text-left">
                         <p class="font-semibold text-lg text-purple-800">{{ $Outlet->nama_outlet }}</p>
                         <p class="text-sm text-gray-600">{{ $Outlet->pemilik }}</p>

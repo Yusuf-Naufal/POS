@@ -38,8 +38,8 @@
                 <div class="w-full lg:w-1/2 bg-gray-50 p-4 rounded-lg shadow-md">
                     <h2 class="text-2xl font-semibold text-gray-800 dark:text-white border-b-2 border-gray-200 pb-2 mb-4">Foto Pemilik</h2>
                     <div class="grid grid-cols-1 gap-4">
-                        <a href="{{ asset('assets/' . $pengajuan->pemilik->foto) }}" target="_blank" class="block">
-                            <img src="{{ asset('assets/' . $pengajuan->pemilik->foto) }}" alt="Foto Pemilik" class="w-full max-w-xs h-auto object-cover rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hover:scale-105 transition-transform duration-200 mx-auto">
+                        <a href="{{ asset('public/assets/' . $pengajuan->pemilik->foto) }}" target="_blank" class="block">
+                            <img src="{{ asset('public/assets/' . $pengajuan->pemilik->foto) }}" alt="Foto Pemilik" class="w-full max-w-xs h-auto object-cover rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hover:scale-105 transition-transform duration-200 mx-auto">
                         </a>
                     </div>
                 </div>
@@ -105,8 +105,8 @@
                 <div class="w-full lg:w-1/2 bg-gray-50 p-4 rounded-lg shadow-md">
                     <h2 class="text-2xl font-semibold text-gray-800 dark:text-white border-b-2 border-gray-200 pb-2 mb-4">Foto Outlet</h2>
                     <div class="grid grid-cols-1 gap-4">
-                        <a href="{{ asset('assets/' . $pengajuan->foto) }}" target="_blank" class="block">
-                            <img src="{{ asset('assets/' . $pengajuan->foto) }}" alt="Foto Outlet" class="w-full max-w-xs h-auto object-cover rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hover:scale-105 transition-transform duration-200 mx-auto">
+                        <a href="{{ asset('public/assets/' . $pengajuan->foto) }}" target="_blank" class="block">
+                            <img src="{{ asset('public/assets/' . $pengajuan->foto) }}" alt="Foto Outlet" class="w-full max-w-xs h-auto object-cover rounded-lg shadow-md border border-gray-200 dark:border-gray-700 hover:scale-105 transition-transform duration-200 mx-auto">
                         </a>
                     </div>
                 </div>

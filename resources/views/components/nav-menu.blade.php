@@ -8,7 +8,7 @@
             <!-- User Profile Button -->
             <button type="button" class="relative flex items-center text-sm bg-purple-700 rounded-full focus:ring-4 focus:ring-purple-300 dark:focus:ring-purple-500" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
                 <span class="sr-only">Open user menu</span>
-                <img class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-purple-700" src="{{ asset('assets/' . auth()->user()->foto ) }}" alt="User photo">
+                <img class="w-8 h-8 rounded-full ring-2 ring-white dark:ring-purple-700" src="{{ asset('public/assets/' . auth()->user()->foto ) }}" alt="User photo">
             </button>
             <!-- Dropdown menu -->
             <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-purple-100 rounded-lg shadow-lg dark:bg-purple-700 dark:divide-purple-600" id="user-dropdown">
