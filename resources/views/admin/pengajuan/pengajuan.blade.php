@@ -33,8 +33,8 @@
                             @foreach ($pengajuan as $index => $pengajuan)
                             <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200" data-id="{{ $pengajuan->id }}">
                                 <td class="px-6 py-4">
-                                    <a href="{{ asset('storage/assets/' . $pengajuan->foto) }}" target="_blank" class="block w-20 h-20 rounded-lg overflow-hidden shadow-md">
-                                        <img src="{{ asset('storage/assets/' . $pengajuan->foto) }}" alt="Foto {{ $pengajuan->nama_outlet }}" class="object-cover w-full h-full">
+                                    <a href="{{ asset('assets/' . $pengajuan->foto) }}" target="_blank" class="block w-20 h-20 rounded-lg overflow-hidden shadow-md">
+                                        <img src="{{ asset('assets/' . $pengajuan->foto) }}" alt="Foto {{ $pengajuan->nama_outlet }}" class="object-cover w-full h-full">
                                     </a>
                                 </td>
                                 <td class="px-6 py-4">{{ $pengajuan->nama_outlet }}</td>

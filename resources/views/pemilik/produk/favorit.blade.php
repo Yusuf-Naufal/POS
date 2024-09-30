@@ -34,7 +34,7 @@
                         @foreach ($terjual as $item)
                             <tr class="border-b hover:bg-gray-100">
                                 <td class="px-4 py-4">
-                                    <img class="w-16 h-16 object-cover rounded" src="{{ asset('storage/assets/' . $item->foto) }}" alt="Produk">
+                                    <img class="w-16 h-16 object-cover rounded" src="{{ asset('assets/' . $item->foto) }}" alt="Produk">
                                 </td>
                                 <td class="px-4 py-4">{{ $item->nama_produk }}</td>
                                 <td class="px-4 py-4">{{ $item->sku }}</td>

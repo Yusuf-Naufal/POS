@@ -12,7 +12,7 @@
       <div>
         <div class="px-4 py-4 flex items-center justify-between">
           <div class="flex gap-3 items-center">
-            <img id="profileImage" src="{{ auth()->user()->foto ? asset('storage/assets/' . auth()->user()->foto) : asset('assets/profile.png') }}" alt="Profile" class="h-12 w-12 rounded-full object-cover">
+            <img id="profileImage" src="{{ auth()->user()->foto ? asset('assets/' . auth()->user()->foto) : asset('assets/profile.png') }}" alt="Profile" class="h-12 w-12 rounded-full object-cover">
               <div>
                <p class="text-base font-semibold">{{ auth()->user()->nama }}</p>
                   <p class="text-sm text-gray-400">{{ auth()->user()->role }}</p>

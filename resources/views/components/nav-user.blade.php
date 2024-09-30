@@ -21,7 +21,7 @@
         </div>
         <div class="relative">
             <button class="relative z-10 block p-2 text-gray-600 rounded-full focus:outline-none" aria-expanded="false" data-dropdown-toggle="user-menu">
-                <img src="{{ asset('storage/assets/' . auth()->user()->foto ) }}" alt="User" class="rounded-full h-10 w-10">
+                <img src="{{ asset('assets/' . auth()->user()->foto ) }}" alt="User" class="rounded-full h-10 w-10">
             </button>
             <div class="z-50 hidden min-w-max text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600" id="user-menu">
                 <div class="px-4 pt-3" role="none">

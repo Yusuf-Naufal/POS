@@ -41,7 +41,7 @@
                 <div class="outlet-item relative p-4 bg-white rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300 ease-in-out">
                     <a href="{{ !$isClosed ? route('order.form', ['id' => $outlet->id]) : 'javascript:void(0)' }}" class="flex items-center space-x-6 @if($isClosed) pointer-events-none @endif">
                         <div class="relative">
-                            <img class="w-20 h-20 rounded-lg object-cover shadow-md" src="{{ asset('storage/assets/' . $outlet->foto ) }}" alt="Outlet Image">
+                            <img class="w-20 h-20 rounded-lg object-cover shadow-md" src="{{ asset('assets/' . $outlet->foto ) }}" alt="Outlet Image">
                             @if($isClosed)
                                 <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
                                     <span class="text-white text-lg font-bold">Tutup</span>

@@ -66,7 +66,7 @@
                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
                         <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                             <a target="_blank" class="w-4 h-4">
-                                <img class="w-20 h-20 rounded-md" src="{{ asset('storage/assets/' . $user->foto ) }}" alt="User">
+                                <img class="w-20 h-20 rounded-md" src="{{ asset('assets/' . $user->foto ) }}" alt="User">
                             </a>
                         </td>
                         <td class="px-6 py-4">

@@ -29,7 +29,7 @@
                                         <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span></p>
                                     </div>
                                     <input id="dropzone-file" type="file" class="hidden" accept="image/*"  name="foto" onchange="previewImage(event)" />
-                                    <img class="w-full h-full rounded-md" id="image-update" src="{{ asset('storage/assets/'. $outlet->foto) }}" alt="">
+                                    <img class="w-full h-full rounded-md" id="image-update" src="{{ asset('assets/'. $outlet->foto) }}" alt="">
                                 </label>
                             </div>
 
