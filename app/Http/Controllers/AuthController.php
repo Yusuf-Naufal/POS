@@ -146,8 +146,17 @@ class AuthController extends Controller
 
         // Handle the image upload if exists
         if ($request->hasFile('image')) {
-            $foto = time() . '.' . $request->image->extension();
-            $request->image->storeAs('public/assets/profile', $foto);
+            // Mengambil file gambar
+            $foto = $request->file('image');
+
+            // Menghasilkan nama file unik berdasarkan timestamp
+            $filename = time() . '.' . $foto->extension();
+
+            // Menentukan path tujuan
+            $destinationPath = public_path('assets/profile');
+
+            // Memindahkan file ke folder yang diinginkan
+            $foto->move($destinationPath, $filename);
         } else {
             $foto = null; // Handle cases where no image is uploaded
         }
@@ -325,8 +334,17 @@ class AuthController extends Controller
 
         // Handle file upload if it exists
         if ($request->hasFile('foto')) {
-            $foto = time() . '.' . $request->foto->extension();
-            $request->foto->storeAs('public/assets/profile', $foto);
+            // Mengambil file gambar
+            $foto = $request->file('foto');
+
+            // Menghasilkan nama file unik berdasarkan timestamp
+            $filename = time() . '.' . $foto->extension();
+
+            // Menentukan path tujuan
+            $destinationPath = public_path('assets/profile');
+
+            // Memindahkan file ke folder yang diinginkan
+            $foto->move($destinationPath, $filename);
         } else {
             $foto = null;
         }
@@ -385,13 +403,19 @@ class AuthController extends Controller
         // Jika ada foto baru yang diunggah
         if ($request->hasFile('foto')) {
             // Hapus foto lama jika ada
-            if ($user->foto && Storage::exists('public/assets/' . $user->foto)) {
-                Storage::delete('public/assets/' . $user->foto);
+            if ($user->foto) {
+                $oldFilePath = public_path('assets/' . $user->foto);
+
+                // Periksa apakah file lama ada di folder public
+                if (file_exists($oldFilePath)) {
+                    // Hapus foto lama
+                    unlink($oldFilePath);
+                }
             }
 
             // Simpan foto baru
             $foto = time() . '.' . $request->foto->extension();
-            $request->foto->storeAs('public/assets/profile', $foto);
+            $request->foto->move(public_path('assets/profile'), $foto);
             $user->foto = 'profile/' . $foto;
         }
 
@@ -472,8 +496,17 @@ class AuthController extends Controller
 
         // Handle file upload if it exists
         if ($request->hasFile('foto')) {
-            $foto = time() . '.' . $request->foto->extension();
-            $request->foto->storeAs('public/assets/profile', $foto);
+            // Mengambil file gambar
+            $foto = $request->file('foto');
+
+            // Menghasilkan nama file unik berdasarkan timestamp
+            $filename = time() . '.' . $foto->extension();
+
+            // Menentukan path tujuan
+            $destinationPath = public_path('assets/profile');
+
+            // Memindahkan file ke folder yang diinginkan
+            $foto->move($destinationPath, $filename);
         } else {
             $foto = null;
         }
@@ -557,13 +590,19 @@ class AuthController extends Controller
         // Jika ada foto baru yang diunggah
         if ($request->hasFile('foto')) {
             // Hapus foto lama jika ada
-            if ($user->foto && Storage::exists('public/assets/' . $user->foto)) {
-                Storage::delete('public/assets/' . $user->foto);
+            if ($user->foto) {
+                $oldFilePath = public_path('assets/' . $user->foto);
+
+                // Periksa apakah file lama ada di folder public
+                if (file_exists($oldFilePath)) {
+                    // Hapus foto lama
+                    unlink($oldFilePath);
+                }
             }
 
             // Simpan foto baru
             $foto = time() . '.' . $request->foto->extension();
-            $request->foto->storeAs('public/assets/profile', $foto);
+            $request->foto->move(public_path('assets/profile'), $foto);
             $user->foto = 'profile/' . $foto;
         }
 
@@ -671,13 +710,19 @@ class AuthController extends Controller
         // Jika ada foto baru yang diunggah
         if ($request->hasFile('foto')) {
             // Hapus foto lama jika ada
-            if ($user->foto && Storage::exists('public/assets/' . $user->foto)) {
-                Storage::delete('public/assets/' . $user->foto);
+            if ($user->foto) {
+                $oldFilePath = public_path('assets/' . $user->foto);
+
+                // Periksa apakah file lama ada di folder public
+                if (file_exists($oldFilePath)) {
+                    // Hapus foto lama
+                    unlink($oldFilePath);
+                }
             }
 
             // Simpan foto baru
             $foto = time() . '.' . $request->foto->extension();
-            $request->foto->storeAs('public/assets/profile', $foto);
+            $request->foto->move(public_path('assets/profile'), $foto);
             $user->foto = 'profile/' . $foto;
         }
 
